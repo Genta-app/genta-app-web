@@ -1,0 +1,176 @@
+//
+// Copyright (c) 2022 Digital Five Pty Ltd
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+@use 'defs.scss';
+
+.account-selection-header {
+    margin-top: 4rem;
+    padding: 0 1rem;
+    text-align: center;
+}
+
+.account-selection-section {
+    display: flex;
+    @media (min-width: 768px) {
+        border: 1px solid #888;
+        border-radius: 12px;
+        margin: 4rem auto;
+    }
+    @media (max-width: 767px) {
+        margin: 0 auto;
+    }
+    padding: 4rem 0.5rem;
+    width: min(60rem, 95vw);
+    justify-content: center;
+}
+
+.account-type-title-box {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+}
+
+.account-type-box {
+    width: min(25rem, 45vw);
+    box-sizing: border-box;
+    @media (min-width: 768px) {
+        margin: 0 1rem;
+        padding: 3rem 0;
+    }
+    @media (max-width: 767px) {
+        margin: 0 0.5rem;
+        padding: 3rem 0;
+    }
+}
+
+.account-type-box-selected {
+    background-color: rgba(255, 255, 255, 0.05)
+}
+
+.account-type-box div.account-type-name {
+    background-color: rgba(255, 255, 255, 0.05)
+}
+
+.account-type-box-selected div.account-type-name {
+    background-color: #363a46;
+}
+
+.account-type-name {
+    font-weight: 900;
+    font-size: 1.2rem;
+    letter-spacing: 0.075em;
+    @media (min-width: 768px) {
+        width: 50%;
+        padding: 0.5rem 2rem;
+        margin-left: 3rem;
+        margin-bottom: 4rem;
+    }
+    @media (max-width: 767px) {
+        padding: 0.5rem;
+        margin-bottom: 2rem;
+        width: 85%;
+    }
+}
+
+.account-feature-list {
+    @media (min-width: 768px) {
+        box-sizing: border-box;
+        height: 20rem;
+        margin-top: 3rem;
+    }
+    @media (max-width: 767px) {
+        box-sizing: border-box;
+        height: 14rem;
+        margin-top: 3rem;
+    }
+}
+
+.account-type-feature {
+    font-weight: 500;
+
+    @media (min-width: 768px) {
+        margin: 0.5rem 0 1.5rem 5rem;
+        width: 75%;
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 767px) {
+        margin: 1rem 0.5rem;
+        font-size: 0.85rem;
+    }
+}
+
+.account-type-feature span {
+
+    @media (max-width: 767px) {
+        text-transform: uppercase;
+    }
+}
+
+.account-type-checkbox {
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    margin: 4rem auto 0 auto;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.15);
+    line-height: 5rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.account-type-dot {
+    display: inline;
+}
+
+.account-type-price-box {
+    display: flex;
+    justify-content: center;
+    @media (min-width: 768px) {
+        height: 3.5rem;
+    }
+    @media (max-width: 767px) {
+        height: 2.5rem;
+    }
+}
+
+.account-type-price-box div:nth-child(1) {
+    @media (min-width: 768px) {
+        font-size: 1.4rem;
+    }
+    @media (max-width: 767px) {
+        font-size: 0.85rem;
+    }
+    display: flex;
+    align-items: center;
+}
+
+.account-type-price-box div:nth-child(2) {
+    @media (min-width: 768px) {
+        font-size: 3rem;
+    }
+    @media (max-width: 767px) {
+        font-size: 2rem;
+    }
+    margin: 0 0.5rem;
+}
+
+.account-type-price-box div:nth-child(3) {
+    padding-top: 0.5rem;
+    @media (max-width: 767px) {
+        font-size: 0.7rem;
+    }
+
+}

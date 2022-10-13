@@ -1,0 +1,1176 @@
+//
+// Copyright (c) 2022 Digital Five Pty Ltd
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+@use 'defs.scss';
+
+$control-width: 25rem;
+$control-width-mobile: 18rem;
+
+$control-margin: 4rem;
+
+%control-transition {
+    transition:
+        color .25s ease-in-out,
+        background-color .25s ease-in-out,
+        border-color .25s ease-in-out,
+        box-shadow .25s ease-in-out;
+}
+
+.main-form {
+
+    margin-top: $control-margin;
+
+    @media (hover: hover) {
+        width: $control-width;
+        margin-left: 5rem;
+    }
+    @media (hover: none), (hover: any) {
+        width: $control-width-mobile;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+
+.main-form3 {
+    @media (hover: hover) {
+        width: $control-width;
+    }
+    @media (hover: none), (hover: any) {
+        width: $control-width-mobile;
+    }
+    margin-top: $control-margin;
+}
+
+.main-form-error {
+    max-width: 26rem;
+    margin-top: 20vh;
+    margin-left: 5rem;
+}
+
+// generic control
+.form-control-w-100 {
+    @media (hover: hover) {
+        width: $control-width;
+    }
+    @media (hover: none), (hover: any) {
+        width: $control-width-mobile;
+    }
+}
+
+.form-control-w-50 {
+    width: 10rem;
+}
+
+// form title
+
+.form-title {
+    width: $control-width;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: $control-margin;
+    letter-spacing: -0.05rem;
+}
+
+.form-title-error {
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0;
+    letter-spacing: -0.05rem;
+}
+
+// text input
+
+.form-input-wrapper {
+    margin-top: $control-margin;
+}
+
+.form-input-inner {
+
+    @extend %control-transition;
+
+    margin-top: 1rem;
+    padding-bottom: 8px;
+    position: relative;
+    border-bottom: 1px solid defs.$color-input-border;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.form-input-wrapper svg {
+    margin-bottom: -3px;
+}
+
+.form-input {
+    display: block;
+    border-style: none;
+    width: $control-width;
+    background-color: defs.$color-input-bg;
+    outline: none;
+
+    font-family: defs.$font;
+    font-weight: normal;
+    font-size: 1rem;
+
+    color: defs.$color-input-text;
+}
+
+.form-readonly-input {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-style: none;
+    outline: none;
+    color: defs.$color-white;
+    padding: 0.5rem 1rem;
+}
+
+.form-input::placeholder {
+    font-weight: normal;
+    font-size: 0.8rem;
+    letter-spacing: 0.05rem;
+    color: defs.$color-input-placeholder-text;
+    user-select: none;
+}
+
+.redtext {
+    position: absolute;
+    left: 0;
+    bottom: -1.3rem;
+    color: defs.$color-text-warning;
+    font-weight: normal;
+    font-size: 0.7rem;
+    letter-spacing: 0.05rem;
+}
+
+.form-input-inner:hover {
+    border-bottom: 1px solid white;
+    color: white;
+}
+
+.form-input-inner:focus {
+    border-bottom: 1px solid white;
+    color: white;
+}
+
+// buttons
+
+.form-button {
+
+    @extend %control-transition;
+
+    margin: $control-margin auto 0 auto;
+    height: 2.5rem;
+
+    background-color: defs.$color-btn-bg;
+
+    display: block;
+    outline: none;
+
+    font-weight: 900;
+    font-size: 1rem;
+    text-align: center;
+
+    color: defs.$color-btn-text;
+    text-shadow: 0px 0px 2px rgba(29, 41, 81, 0.5);
+
+    border-radius: 1.25rem;
+    cursor: pointer;
+}
+
+.form-button-primary {
+    border: 2px solid defs.$color-primary-btn-border;
+}
+
+.form-button-primary:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-primary-btn-border-disabled;
+}
+
+.form-button-primary:hover:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-primary-btn-border-disabled;
+}
+
+.form-button-primary:focus:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-primary-btn-border-disabled;
+}
+
+.form-button-primary:hover {
+    background-color: defs.$color-primary-btn-hover-bg;
+    color: defs.$color-btn-hover-text;
+}
+
+
+.form-button-secondary {
+    border: 2px solid defs.$color-secondary-btn-border;
+}
+
+.form-button-secondary:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-secondary-btn-border-disabled;
+}
+
+.form-button-secondary:hover:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-secondary-btn-border-disabled;
+}
+
+.form-button-secondary:focus:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-secondary-btn-border-disabled;
+}
+
+.form-button-secondary:hover {
+    background-color: defs.$color-secondary-btn-hover-bg;
+    color: defs.$color-btn-hover-text;
+}
+
+.form-button-secondary:focus {
+    outline: 2px solid defs.$color-secondary-btn-focus-outline;
+}
+
+.form-button-primary:focus {
+    outline: 2px solid defs.$color-primary-btn-focus-outline;
+}
+
+.form-button-warning {
+    border: 2px solid defs.$color-warning-btn-border;
+}
+
+.form-button-warning:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-warning-btn-border-disabled;
+}
+
+.form-button-warning:hover:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-warning-btn-border-disabled;
+}
+
+.form-button-warning:focus:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-warning-btn-border-disabled;
+}
+
+.form-button-warning:hover {
+    background-color: defs.$color-warning-btn-hover-bg;
+    color: defs.$color-btn-hover-text-dark;
+}
+
+.form-button-warning:focus {
+    outline: 2px solid defs.$color-warning-btn-focus-outline;
+}
+
+
+.form-button-danger {
+    border: 2px solid defs.$color-danger-btn-border;
+}
+
+.form-button-danger:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-danger-btn-border-disabled;
+}
+
+.form-button-danger:hover:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-danger-btn-border-disabled;
+}
+
+.form-button-danger:focus:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-danger-btn-border-disabled;
+}
+
+.form-button-danger:hover {
+    background-color: defs.$color-danger-btn-hover-bg;
+    color: defs.$color-btn-hover-text-dark;
+}
+
+.form-button-danger:focus {
+    outline: 2px solid defs.$color-danger-btn-focus-outline;
+}
+
+.form-button-white {
+    border: 2px solid defs.$color-white-btn-border;
+}
+
+.form-button-white:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-white-btn-border-disabled;
+}
+
+.form-button-white:hover:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-white-btn-border-disabled;
+}
+
+.form-button-white:focus:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-white-btn-border-disabled;
+}
+
+.form-button-white:hover {
+    background-color: defs.$color-white-btn-hover-bg;
+    color: defs.$color-primary;
+}
+
+.form-button-white:focus {
+    outline: 2px solid defs.$color-white-btn-focus-outline;
+}
+
+
+.form-button-superwhite {
+    border: 2px solid #888;
+    background-color: #888;
+    color: white;
+}
+
+.form-button-superwhite:disabled {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid defs.$color-white-btn-border-disabled;
+}
+
+.form-button-superwhite:hover:disabled {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid defs.$color-white-btn-border-disabled;
+}
+
+.form-button-superwhite:focus:disabled {
+    background-color: defs.$color-transparent;
+    border: 2px solid defs.$color-white-btn-border-disabled;
+}
+
+.form-button-superwhite:hover {
+    background-color: defs.$color-white-btn-hover-bg;
+    color: defs.$color-primary;
+}
+
+.form-button-superwhite:focus {
+    outline: 2px solid defs.$color-white-btn-focus-outline;
+}
+
+// free text on the form
+.form-text {
+
+    position: relative;
+
+    max-width: $control-width;
+    margin-top: $control-margin;
+
+    font-weight: normal;
+    line-height: 1.5rem;
+
+    color: defs.$color-static-text;
+
+}
+
+.form-text-with-margin {
+
+    @extend .form-text;
+
+    position: relative;
+
+    margin-left: 0.2rem;
+    border-left: 0.5rem solid rgba(255, 255, 255, 0.1);
+    padding-left: 1rem;
+
+    margin-top: $control-margin;
+    color: defs.$color-text-secondary !important;
+}
+
+// checkbox
+.form-checkbox {
+
+    @extend %control-transition;
+
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    max-width: $control-width;
+    margin-top: $control-margin;
+
+    color: defs.$color-checkbox-text;
+
+    user-select: none;
+}
+
+.form-checkbox input {
+
+    @extend %control-transition;
+
+    margin-right: 1rem;
+
+    accent-color: defs.$color-bg;
+    background-color: defs.$color-bg;
+
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.form-checkbox:hover {
+    color: defs.$color-checkbox-hover-text;
+}
+
+.form-checkbox:hover * {
+    color: defs.$color-checkbox-hover-text;
+}
+
+// anchors
+a {
+    color: defs.$color-white;
+}
+
+// static (const) values
+.form-static {
+
+    border-style: none;
+    width: $control-width;
+    background-color: defs.$color-input-bg;
+
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 21px;
+
+    margin-top: $control-margin;
+    color: defs.$color-input-text;
+
+}
+
+.form-static-label {
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 16px;
+    padding-bottom: 8px;
+}
+
+.form-static-label-small {
+    font-weight: normal;
+    font-size: 10px;
+    line-height: 16px;
+    padding-bottom: 8px;
+}
+
+/*.form-label-with-delete {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border: 2px solid defs.$color-white;
+    box-sizing: border-box;
+    border-radius: 18px;
+
+    height: 2.5rem;
+    padding: 0 1rem;
+
+    margin: 0.5rem 2rem;
+}
+
+.form-label-with-delete div {
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 19px;
+    margin-right: 2rem;
+}*/
+
+.form-action-icon-list {
+    margin-top: $control-margin*2;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1rem;
+}
+
+.form-action-icon-with-text {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-action-icon-with-text div {
+
+    margin-top: 4px;
+
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 16px;
+
+    color: defs.$color-action-icon-text;
+}
+
+
+.bi-exclamation-octagon {
+    fill: defs.$color-text-warning;
+}
+
+.form-progress-bar {
+    position: relative;
+
+    font-weight: normal;
+    font-size: 0.8rem;
+    letter-spacing: 0.05rem;
+
+    text-align: end;
+
+    padding-bottom: 0.5rem;
+
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: $control-margin*2;
+    width: $control-width;
+}
+
+.form-progress-bar-bar {
+    left: 0;
+    bottom: 0;
+
+    position: absolute;
+    height: 0.25rem;
+    width: 100%;
+
+    background-color: defs.$color-dark-grey;
+}
+
+.form-progress-bar-perc {
+    left: 0;
+    bottom: 0;
+
+    position: absolute;
+    height: 0.25rem;
+    width: 100%;
+
+    background-color: defs.$color-primary-btn-border;
+}
+
+
+.form-dropdown-wrapper {
+    @extend %control-transition;
+
+    margin-top: $control-margin;
+
+    @media (hover: hover) {
+        width: $control-width;
+    }
+    @media (hover: none), (hover: any) {
+        width: $control-width-mobile;
+    }
+}
+
+.form-dropdown {
+
+    position: relative;
+
+    width: 100%;
+
+    font-size: 1.1rem;
+    font-weight: normal;
+
+    border-bottom: 1px solid defs.$color-input-border;
+
+    display: flex;
+    justify-content: space-between;
+
+    color: defs.$color-white;
+
+    cursor: pointer;
+    user-select: none;
+
+    padding-bottom: 0.25rem;
+}
+
+.form-dropdown-disabled {
+
+    position: relative;
+
+    width: 100%;
+
+    font-size: 1.1rem;
+    font-weight: normal;
+
+    border-bottom: 1px solid defs.$color-input-border;
+
+    display: flex;
+    justify-content: space-between;
+
+    color: defs.$color-very-dark-grey;
+
+    cursor: disabled;
+    user-select: none;
+
+    padding-bottom: 0.25rem;
+}
+
+
+.form-dropdown:hover {
+    color: defs.$color-checkbox-hover-text;
+    border-bottom: 1px solid defs.$color-checkbox-hover-text;
+}
+
+.form-dropdown:hover path {
+    fill: defs.$color-checkbox-hover-text;
+}
+
+.form-control-label {
+
+    font-weight: 900;
+    font-size: 0.8rem;
+    letter-spacing: 0.05rem;
+
+    margin-bottom: 0.5rem;
+}
+
+.form-dropdown-calendar-panel-wrapper {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+
+    @media (hover: hover) {
+        padding: 3rem 1rem 3rem 1rem;
+        width: calc($control-width - 2rem);
+    }
+    @media (hover: none), (hover: any) {
+        padding: 1rem 0.5rem;
+        width: $control-width-mobile;
+        margin: 0 -0.5rem;
+    }
+
+    background-color: defs.$color-dropdown-panel-bg;
+
+    border: 1px solid defs.$color-white;
+}
+
+
+.form-dropdown-calendar-panel-wrapper-embedded {
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+    width: min(20rem, 95vw);
+}
+
+
+.form-dropdown-calendar-panel {
+
+    @media (hover: hover) {
+        width: 18rem;
+    }
+    @media (hover: none), (hover: any) {
+        width: $control-width-mobile;
+    }
+
+    max-width: 90%;
+    font-style: normal;
+    font-size: 1.25rem;
+}
+
+.form-dropdown-calendar-bar {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin: 1.5rem 0;
+    font-size: 1.2rem;
+}
+
+
+.form-dropdown-calendar-bar svg:hover * {
+    stroke: defs.$color-checkbox-hover-text;
+}
+
+.form-dropdown-calendar-bar div:hover {
+    color: defs.$color-checkbox-hover-text;
+}
+
+.form-dropdown-calendar-line {
+    display: grid;
+    justify-items: end;
+    width: 100%;
+    grid-template-columns: 1fr repeat(6, 2fr);
+    margin: 0;
+    gap: 0;
+
+    user-select: none;
+}
+
+.form-dropdown-calendar-line div {
+    @media (hover: hover) {
+        width: 2.1rem;
+    }
+    @media (hover: none), (hover: any) {
+        width: 1.95rem;
+    }
+    text-align: end;
+    padding-right: 0.5rem;
+}
+
+.form-dropdown-calendar-line-selected {
+    cursor: pointer;
+    background-color: defs.$color-white;
+    color: defs.$color-bg;
+}
+
+.form-dropdown-calendar-line-inactive {
+    color: defs.$color-very-dark-grey;
+}
+
+.form-dropdown-calendar-line-active {
+    cursor: pointer;
+}
+
+.form-dropdown-calendar-line-current {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.form-dropdown-calendar-line-active:hover {
+    background-color: defs.$color-dropdown-panel-hover;
+}
+
+.form-dropdown-calendar-item {
+    cursor: pointer;
+    user-select: none;
+}
+
+.form-dropdown-list {
+    background-color: defs.$color-dropdown-panel-bg;
+}
+
+.form-dropdown-list-item {
+    user-select: none;
+    cursor: pointer;
+    padding: 1rem;
+}
+
+
+.form-dropdown-list-item:hover {
+    background-color: defs.$color-dropdown-panel-hover;
+}
+
+.form-dropdown-list-item:not(:last-child) {
+    border-bottom: 1px solid defs.$color-dark-grey;
+}
+
+.form-standalone-label {
+
+    width: $control-width;
+
+    font-weight: normal;
+    font-size: 0.8rem;
+    letter-spacing: 0.05rem;
+
+    margin-top: 2*$control-margin;
+    margin-bottom: 0.5rem;
+}
+
+.form-text-with-label {
+
+    font-size: 1.1rem;
+    font-weight: normal;
+    width: $control-width;
+
+    margin-top: $control-margin;
+}
+
+.sub-main-panel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: $control-width*2 + $control-width*1.25;
+    justify-content: space-between;
+    margin: 10vh auto 0 auto;
+}
+
+.sub-block {
+    position: relative;
+    font-weight: 400;
+    font-size: 14px;
+    width: $control-width;
+    background-color: defs.$color-primary;
+    padding-top: 2rem;
+    padding-bottom: 7rem;
+
+    border: 1px solid #666;
+}
+
+.sub-block-button {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.sub-block-title {
+    font-weight: 900;
+    font-size: 16px;
+    color: defs.$color-white;
+    width: 50%;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+    border-style: solid;
+    border-width: 0px 0px 2px 0px;
+    /*border-width: 2px 2px 2px 2px;*/
+}
+
+.sub-block-item-list {
+    color: rgba(255, 255, 255, 0.75);
+    margin: 17rem 2rem 2rem 2rem;
+}
+
+.sub-block-item {
+    font-weight: 400;
+    font-size: 14px;
+    margin: 1rem 1rem;
+}
+
+.sub-block-item svg {
+    margin-right: 1rem;
+}
+
+.sub-block-item-price-amount {
+    font-size: 72px;
+}
+
+.sub-block-item-price-desc {
+    font-size: 14px;
+}
+
+.sub-price-list-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: #4a4e58;
+    cursor: pointer;
+    user-select: none;
+    padding: 1rem;
+}
+
+
+.sub-price-list-item:hover {
+    background-color: #5a5e68;
+}
+
+.upload-filelist-item {
+    display: grid;
+    grid-template-columns: 1fr 2rem;
+    column-gap: 0.5rem;
+    padding: 1rem 1rem;
+}
+
+.upload-filelist-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+.upload-filelist-item-error {
+    color: defs.$color-danger;
+}
+
+.upload-filelist-item:first-child {
+    padding-top: 2rem;
+}
+
+.upload-filelist-item:last-child {
+    padding-bottom: 2rem;
+}
+
+.upload-filelist-item-name {
+    font-weight: 900;
+}
+
+.upload-filelist-item-details {
+    padding-top: 0.5rem;
+    font-size: 0.9em;
+    font-weight: normal;
+}
+
+.drag-target {
+
+    margin-top: $control-margin;
+
+    border-width: 3px;
+    border-style: dotted;
+    border-color: rgba(255, 255, 255, 0.75);
+    border-radius: 2rem;
+
+    height: 15rem;
+    display: flex;
+    align-items: center;
+}
+
+.alert {
+    position: fixed;
+    top: 4rem;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 9999;
+
+    font-weight: 500;
+    font-size: 1.1rem;
+
+    background-color: defs.$color-primary;
+    border: 1px solid defs.$color-white;
+
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+}
+
+// pills
+
+.form-pill {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: defs.$color-white;
+    color: defs.$color-bg;
+
+    font-weight: 900;
+    font-size: 0.7rem;
+    line-height: 0.7rem;
+
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+}
+
+.full-screen-alert {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
+
+.full-screen-alert-inner {
+    width: 60%;
+    height: 100%;
+    margin: 0 20vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: defs.$color-bg;
+    filter: drop-shadow(2px 6px 6px black);
+}
+
+.full-screen-alert-message {
+    font-size: 1.3rem;
+}
+
+// custom checkbox for cost calculator on landing page
+.custom-checkbox1 {
+
+    display: inline-flex;
+    align-items: center;
+
+    position: relative;
+    color: defs.$color-checkbox-text;
+    user-select: none;
+
+    @media (min-width: 321px) {
+        margin-right: 2rem;
+    }
+    @media  (max-width: 320px) {
+        margin-right: 0.5rem;
+        margin-bottom: 1rem;
+    }
+}
+
+.custom-checkbox1 input {
+
+    margin-right: 0.5rem;
+
+    accent-color: defs.$color-bg;
+    background-color: defs.$color-bg;
+
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.custom-checkbox1 div {
+    display: inline;
+}
+
+.custom-checkbox1:hover {
+    color: defs.$color-checkbox-hover-text;
+}
+
+.custom-checkbox1:hover * {
+    color: defs.$color-checkbox-hover-text;
+}
+
+.copy-code-button {
+    color: #f6c0ff;
+    background-color: #363a46;
+    border: 1px solid #f6c0ff;
+    border-radius: 5px;
+    padding: 0.25rem 1rem;
+    cursor: pointer;
+}
+
+.square-button {
+
+    @extend %control-transition;
+
+    font-weight: 900;
+    text-align: center;
+
+    background-color: defs.$color-btn-bg;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    color: defs.$color-btn-text;
+    text-shadow: 0px 0px 2px rgba(29, 41, 81, 0.5);
+
+    @media (max-width: 425px) {
+        font-size: 0.6rem;
+        max-width: 60%;
+    }
+
+    @media (min-width: 426px) {
+
+        font-size: 0.75rem;
+        height: 1.75rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        outline: none;
+        padding: 0 0.75rem 0 1rem;
+
+
+        cursor: pointer;
+
+        width: 14rem;
+    }
+}
+
+.square-button svg {
+    @media (max-width: 425px) {
+        display: none;
+    }
+}
+
+.square-button:hover {
+    @media (min-width: 426px) {
+        background-color: defs.$color-white-btn-hover-bg;
+        color: defs.$color-primary;
+    }
+}
+
+.square-button:focus {
+    outline: 2px solid defs.$color-white-btn-focus-outline;
+}
+
+.what-can-we-improve-dialog-wrapper {
+    position: fixed;
+    z-index: 101;
+    background-color: #363A46E0;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    padding-top: 5rem;
+}
+
+.what-can-we-improve-dialog {
+    width: min(95%, 50rem);
+    height: 25rem;
+    background-color: #363A46;
+    opacity: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+    padding: 0 2rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5));
+}
+
+.what-can-we-improve-dialog div:first-child {
+
+    font-size: 0.9rem;
+    font-weight: 900;
+}
+
+.what-can-we-improve-dialog textarea {
+    margin: 0.75rem auto;
+    display: block;
+    width: calc(100% - 1rem);
+    height: 12rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.75);
+    border: 0;
+    outline: none;
+    box-sizing: content-box;
+    padding: 0.5rem;
+    font-family: defs.$font;
+}
+
+.what-can-we-improve-dialog div:last-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @media (max-width: 767px) {
+        margin-top: 2rem;
+    }
+}
+
+.what-can-we-improve-confirmation {
+    width: min(95%, 50rem);
+    height: 25rem;
+    background-color: #363A46;
+    opacity: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+    padding: 0 2rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    font-weight: 900;
+    font-size: 1.1rem;
+
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5));
+}
+
+.what-can-we-improve-confirmation div:first-child {
+    margin: 5rem 0;
+    text-align: center;
+}
+
+.what-can-we-improve-menu-item {
+    font-weight: 900;
+    margin-bottom: 1rem;
+    margin-left: 2rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.what-can-we-improve-menu-item svg {
+    margin-right: 1rem;
+}

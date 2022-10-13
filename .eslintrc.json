@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
+  "parser": "babel-eslint",
+  "extends": ["airbnb"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "no-console": "off",
+    "comma-dangle": "off",
+    "react/jsx-filename-extension": "off",
+    "import/extensions": "never",
+    "camelcase": "off",
+    "react/prop-types": false,
+    "react/no-unescaped-entities": false,
+    "import/prefer-default-export": false,
+    "import/jsx-one-expression-per-line": true,
+    "react/jsx-one-expression-per-line": false
+  }
+}

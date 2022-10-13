@@ -1,0 +1,236 @@
+//
+// Copyright (c) 2022 Digital Five Pty Ltd
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+@use 'defs.scss';
+@use 'controls.scss';
+@use 'menu.scss';
+@use 'view.scss';
+@use 'landing.scss';
+@use 'album.scss';
+@use 'doc.scss';
+@use 'processed-google-fonts.scss';
+@use 'signup.scss';
+@use 'account.scss';
+
+html {
+    font-size: defs.$font-size;
+    font-family: defs.$font;
+    font-style: normal;
+}
+
+body {
+    margin: 0;
+    background-color: defs.$color-bg;
+    color: defs.$color-white;
+}
+
+.main {
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+// for pages without top bar
+.main2 {
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    display: grid;
+    grid-template-columns: minmax(30rem, 35vw) 1fr;
+}
+
+.main3 {
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.left-panel-wrapper {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+
+}
+
+.left-panel {
+    width: min(20rem, 98vw);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: #444854;
+
+    filter: drop-shadow(0px 4px 4px #000000);
+
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    //scrollbar-color: dark;
+}
+
+.left-panel-x {
+    position: absolute;
+    left: 1rem;
+    top: 1.5rem;
+}
+
+.left-panel-with-logo {
+    min-height: 100%;
+    background-color: defs.$color-primary;
+    display: grid;
+    place-items: center;
+}
+
+.left-panel-logo {
+    background-color: defs.$color-white;
+
+    color: defs.$color-primary;
+    font-weight: bold;
+    font-size: 1.4*defs.$font-size;
+    line-height: 26px;
+
+    padding: 0.1rem 1rem;
+    border-radius: 0.2rem;
+}
+
+.left-panel-daisy {
+    width: 318px;
+    height: 181px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.main-panel-with-menu {
+    margin-left: 30rem;
+}
+
+.main-panel-centered {
+    display: flex;
+    justify-content: center;
+}
+
+.top-bar {
+    width: calc(90% + 20px); // 10px is the big pic border width
+    margin: 1rem auto 0;
+
+    height: 3rem;
+
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    background: linear-gradient(180deg, rgba(54, 58, 70, 1) 0%, rgba(54, 58, 70, 0.25) 100%);
+}
+
+.top-bar-logo {
+  display: flex;
+  align-items: center;
+  font-family: 'Ubuntu', sans-serif;
+  margin-top: 0.75rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  font-size: 1.1rem;
+  line-height: 27px;
+}
+
+.top-bar-left {
+    display: flex;
+    align-items: center;
+}
+
+.top-bar-account {
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    color: #363A46;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: defs.$color-white;
+
+    font-weight: 900;
+    font-size: 1.2rem;
+
+    margin: 0.5rem 2rem 0.5rem 0.5rem;
+}
+
+.top-bar-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    @media (min-width: 1440px) {
+        margin-right: 2rem;
+    }
+}
+
+/*::-webkit-scrollbar {
+    width: 1em;
+    scrollbar-color: red white;
+}*/
+
+.left-panel::-webkit-scrollbar {
+  width: 0.75rem;               /* width of the entire scrollbar */
+}
+
+.left-panel::-webkit-scrollbar-track {
+  background: #444854;        /* color of the tracking area */
+}
+
+.left-panel::-webkit-scrollbar-thumb {
+  background-color: defs.$color-bg;
+  border: 3px solid defs.$color-bg;  /* creates padding around scroll thumb */
+}
+
+::-webkit-scrollbar {
+  width: 0.75rem;               /* width of the entire scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: defs.$color-bg;        /* color of the tracking area */
+}
+
+@media (min-width: 1024px) {
+    ::-webkit-scrollbar-thumb {
+    background-color: #545864;
+    border: 3px solid #545864;  /* creates padding around scroll thumb */
+    }
+}
+
+@media (max-width: 1023px) {
+    ::-webkit-scrollbar {
+        width: 0;  /* Remove scrollbar space */
+    }
+}
+
+.display-none-on-767px {
+  @media (max-width: 767px) {
+    display: none;
+  }
+}

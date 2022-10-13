@@ -1,0 +1,126 @@
+//
+// Copyright (c) 2022 Digital Five Pty Ltd
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+// fonts
+
+$font: 'Roboto', sans-serif;
+$font-size: 16px;
+
+// generic colors
+
+$color-primary: #3D414F;
+//$color-primary: #222A4D;
+$color-white: rgba(255, 255, 255, 0.75);
+$color-grey: rgba(255, 255, 255, 0.65);
+$color-dark-grey: rgba(255, 255, 255, 0.5);
+$color-very-dark-grey: rgba(255, 255, 255, 0.25);
+$color-bg: #363A46;
+$color-transparent: rgba(0, 0, 0, 0);
+$color-blue: #657EE4;
+$color-green: #07A0C3;
+$color-danger: #FC55FF;
+
+// button colors
+
+$color-btn-text: $color-white;
+$color-btn-hover-text: $color-white;
+$color-btn-hover-text-dark: $color-bg;
+$color-btn-bg: $color-transparent;
+
+
+$color-white-btn-border: #FFF;
+$color-white-btn-border-disabled: #BBB;
+$color-white-btn-hover-bg: #FFF;
+$color-white-btn-focus-outline: #BBB;
+
+$color-primary-btn-border: #657EE4;
+$color-primary-btn-border-disabled: #A0ADE4;
+$color-primary-btn-hover-bg: #657EE4;
+$color-primary-btn-focus-outline: #A0ADE4;
+
+$color-warning-btn-border: #FF9955;
+$color-warning-btn-border-disabled: #FFC9A6;
+$color-warning-btn-hover-bg: #FF9955;
+$color-warning-btn-focus-outline: #FFC9A6;
+
+$color-danger-btn-border: #FC55FF;
+$color-danger-btn-border-disabled: #FDA6FF;
+$color-danger-btn-hover-bg: #FC55FF;
+$color-danger-btn-focus-outline: #FDA6FF;
+
+$color-secondary-btn-border: #07A0C3;
+$color-secondary-btn-border-disabled: #A4BDC3;
+$color-secondary-btn-hover-bg: #07A0C3;
+$color-secondary-btn-focus-outline: #A4BDC3;
+
+// roles
+
+$color-text-warning: #FC55FF;
+$color-text-secondary: rgba(255, 255, 255, 0.5);
+
+// inputs
+
+$color-input-text: $color-white;
+$color-input-placeholder-text: $color-white;
+$color-input-border: $color-white;
+$color-input-bg: $color-transparent;
+
+$color-input-hover-border: white;
+$color-input-focus-border: white;
+
+// static text
+$color-static-text: $color-grey;
+
+// checkboxes
+$color-checkbox-text: $color-grey;
+$color-checkbox-hover-text: white;
+
+// action icons
+$color-action-icon-text: rgba(255, 255, 255, 1);
+
+// menu
+$color-menu-line: rgba(255, 255, 255, 0.25);
+$color-menu-text-warning: #FC55FF;
+
+// dropdowns
+$color-dropdown-panel-hover: rgba(255, 255, 255, 0.15);
+$color-dropdown-panel-bg: rgba(255, 255, 255, 0.05);
+
+
+// generic colour classes
+
+.text-white {
+    color: $color-white;
+}
+
+.text-danger {
+    color: $color-danger;
+}
+
+.text-grey {
+    color: $color-grey;
+}
+
+.text-dark-grey {
+    color: $color-dark-grey;
+}
+
+.text-action {
+    color: $color-action-icon-text;
+}
+
+.bg-white-25 {
+    background-color: $color-menu-line;
+}

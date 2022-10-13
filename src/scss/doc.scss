@@ -1,0 +1,85 @@
+//
+// Copyright (c) 2022 Digital Five Pty Ltd
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+.doc-main {
+    width: min(90%, 50rem);
+    margin: 0 auto;
+    line-height: 1.75rem;
+}
+
+.doc-main h1 {
+    margin: 5rem 0 5rem;
+    line-height: 2.5rem;
+}
+
+.doc-main h2 {
+    margin: 2rem 0 2rem;
+}
+
+.doc-main h3 {
+    margin: 1.5rem 0 1.5rem;
+}
+
+.doc-para {
+    font-size: 1.15rem;
+    margin-bottom: 3rem;
+}
+
+.doc-newline {
+    font-size: 1.15rem;
+    margin-top: -2rem;
+    margin-bottom: 3rem;
+}
+
+.code {
+    color: #f6c0ff;
+    margin-bottom: 3rem;
+    font-family: monospace, monospace;
+    overflow: scroll;
+    white-space: nowrap;
+}
+
+.doc-main img {
+    margin: 3rem;
+}
+
+.doc-inline-caps {
+    font-weight: 900;
+    font-size: 0.9rem;
+}
+
+.backblaze-signup-page {
+    margin-left: 0 !important;
+    height: 30rem;
+    @media (max-width: 900px) {
+        margin: 0 0 1.5rem 2rem !important;
+        justify-content: center;
+        content: url("../../static/backblaze-signup-mobile.png");
+    }
+}
+
+.discord-logo {
+    vertical-align: center;
+    margin: 0 0 0 0 !important;
+    height: 1.3rem;
+}
+
+.rating-button {
+    border: none;
+    background: rgba(0, 0, 0, 0);
+    cursor: pointer;
+    fill: rgba(255, 255, 255, 0.75);
+}

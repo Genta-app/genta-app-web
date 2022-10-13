@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>genta.app | Photo Storage & Sharing</title>
+        <meta name="description" content="genta.app - Photo Storage and Sharing">
+        <meta name="keywords" content="photo video storage sharing encrypted">
+        <meta name="author" content="genta.app">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="src/scss/genta.scss" rel="stylesheet">
+        <link rel="icon" type="image/png" href="static/favicon.png"/>
+
+        <script>
+            const url = new URL('/stream.js', location.origin);
+            navigator.serviceWorker.register(url, {type: 'module'});
+        </script>
+
+    </head>
+    <body>
+        <div  id="root" style="position: relative"></div>
+        <script type="module" src="src/App.js" type="text/javascript"></script>
+    </body>
+</html>
