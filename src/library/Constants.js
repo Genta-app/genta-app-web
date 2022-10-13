@@ -17,6 +17,7 @@
 /* eslint-disable import/prefer-default-export */
 
 export const genta_app_discord_support_url = 'https://discord.gg/VGuBt8c3c6';
+export const genta_app_github_url = 'https://github.com/orgs/Genta-app/repositories';
 export const genta_app_cli_github_url = 'https://github.com/Genta-app/genta-app-cli';
 export const genta_app_subreddit_url = 'https://www.reddit.com/r/genta_app/';
 export const reliability = 'https://www.backblaze.com/blog/cloud-storage-durability/';

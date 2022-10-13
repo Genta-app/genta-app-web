@@ -254,7 +254,7 @@ const LandingPage = ({ app, user }) => {
             <a
               target="_blank"
               rel="noreferrer"
-              href={constant.genta_app_cli_github_url}
+              href={constant.genta_app_github_url}
             >
               GitHub
             </a>

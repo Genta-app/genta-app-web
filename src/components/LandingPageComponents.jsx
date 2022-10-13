@@ -18,7 +18,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import * as icon from './Icons';
-import { genta_app_cli_github_url } from '../library/Constants';
+import { genta_app_github_url } from '../library/Constants';
 
 const FeatureBlock = ({ leftIcon, title, children }) => {
   const LeftIcon = leftIcon;
@@ -105,14 +105,13 @@ export const KeyFeaturesComponent = ({ show_title }) => (
     <FeatureBlock leftIcon={icon.IconGitHub} title="OPEN SOURCE">
       <b>Genta.app</b>
       {' '}
-      team is fully committed to the core principles Open Source. The source code for
+      team is fully committed to the core principles of Open Source. The source code for
       {' '}
       <b>Genta.app</b>
       {' '}
-      CLI Tools is
+      and CLI Tools is
       {' '}
-      <a target="_blank" rel="noreferrer" href={genta_app_cli_github_url}>available on GitHub</a>
-      . We are working to release the source code for the web application in the nearest future.
+      <a target="_blank" rel="noreferrer" href={genta_app_github_url}>available on GitHub</a>.
     </FeatureBlock>
   </>
 );
