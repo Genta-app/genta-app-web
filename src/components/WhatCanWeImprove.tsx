@@ -64,7 +64,7 @@ const WhatCanWeImproveConfirmation = ({ onClose }) => (
           onClick={onClose}
           title="CLOSE"
           style={{ height: '1.75rem', fontSize: '0.9rem', margin: 0 }}
-        />=
+        />
       </div>
     </div>
   </div>
