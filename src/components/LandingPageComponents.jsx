@@ -56,7 +56,7 @@ export const KeyFeaturesComponent = ({ show_title }) => (
       provider can access your data in transit or at rest.
     </FeatureBlock>
 
-    <FeatureBlock leftIcon={icon.PiggyBank} title="PROGRESSIVE PRICING">
+    <FeatureBlock leftIcon={icon.GraphUp} title="PROGRESSIVE PRICING">
       With progressively priced
       {' '}
       <b><Link to="/doc/attach-backblaze-storage">attached storage</Link></b>
