@@ -14,22 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import React from 'react';
+import React, { useState } from 'react';
 
-export const Select = ({ option, children }: {option: number, children: any}) => children[option];
+import * as c from './Controls';
+import { Select } from './JSXFlow';
 
-export const If = ({ condition, children }: {condition: boolean, children: any}) => (
-  condition ? children : null
+export const useAlert = () => {
+  const [alert, setAlert] = useState(null);
+  return [<Alert {...{ alert, setAlert }} />, setAlert];
+};
+
+const Alert = ({ alert, setAlert }) => (
+  <Select option={alert == null ? 0 : 1}>
+    <></>
+    <c.Alert
+      icon={alert.icon}
+      text={alert.text}
+      onClick={() => setAlert(null)}
+    />
+  </Select>
 );
-
-export const ForEach = ({ itemList, render, keyFunc }) => {
-  const Component = render;
-  return itemList.map((item: any) => <Component key={keyFunc(item)} {...{ item }} />);
-};
-
-export const Log = ({ disable, message }) => {
-  if (!disable) {
-    console.log(message);
-  }
-  return <></>;
-};

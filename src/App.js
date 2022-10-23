@@ -65,7 +65,7 @@ import {
   LogoutPage
 } from './pages/Login';
 import LandingPage from './pages/Landing';
-import { StoragePage } from './pages/Storage';
+import { StoragePage } from './pages/storage/Storage';
 import { AlbumPage } from './pages/Album';
 import { ViewAlbumPage } from './pages/viewalbum/ViewAlbum';
 import { UploadPage } from './pages/Upload';
@@ -561,11 +561,7 @@ class App extends React.Component {
                 <LogoutPage app={this} user={user} />
               </Route>
               <Route
-                exact
-                path={[
-                  '/storage',
-                  '/storage/:bucket_ident',
-                ]}
+                path="/storage"
                 render={props => (
                   <StoragePage
                     {...props}

@@ -198,7 +198,7 @@ export const updateBucket = async (pack) => {
 };
 
 export const attachBucket = async (pack) => {
-  const xhr = await httpPost(API_BASE_URL + '/bucket', pack);
+  const xhr = await httpPost(API_BASE_URL + '/bucket', pack, {}, 'arraybuffer');
   return xhr;
 };
 
@@ -591,4 +591,8 @@ export async function apiPostFeedback(email, message) {
 
   const xhr = await httpPost(API_BASE_URL + '/user-feedback', pack);
   return xhr.status;
+}
+
+export async function apiGetTask(task_id) {
+  return /* await */ httpGetBinary(`${API_BASE_URL}/task?id=${task_id}`);
 }

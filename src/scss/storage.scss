@@ -14,22 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import React from 'react';
+@use 'defs.scss';
 
-export const Select = ({ option, children }: {option: number, children: any}) => children[option];
-
-export const If = ({ condition, children }: {condition: boolean, children: any}) => (
-  condition ? children : null
-);
-
-export const ForEach = ({ itemList, render, keyFunc }) => {
-  const Component = render;
-  return itemList.map((item: any) => <Component key={keyFunc(item)} {...{ item }} />);
-};
-
-export const Log = ({ disable, message }) => {
-  if (!disable) {
-    console.log(message);
-  }
-  return <></>;
-};
+.storage-list-item {
+  box-sizing: content-box;
+  border: 1px solid defs.$color-white;
+  height: 3rem;
+  margin: 0.5rem 0;
+  display: flex;
+  padding: 0 1rem;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}

@@ -310,7 +310,12 @@ export class UploadPageComponent extends React.Component {
                   + moov_box[13] * 256 * 256
                   + moov_box[14] * 256 + moov_box[15]);
                 if (full_box_version === 0) {
-                  file_date = new Date(base_date.getTime() + seconds * 1000);
+                  // if seconds === 0, assume the date was not set and set current date
+                  if (seconds === 0) {
+                    file_date = new Date();
+                  } else {
+                    file_date = new Date(base_date.getTime() + seconds * 1000);
+                  }
                 } else {
                   // TODO: version 1, 64 bit date
                   // (aka mp4 plans to exist way longer than it deserves)
