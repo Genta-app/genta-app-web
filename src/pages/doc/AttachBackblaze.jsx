@@ -29,7 +29,6 @@ import {
   ATTACH_BACKBLAZE_STORAGE_NEW_ALBUM
 } from '../../library/GentaAnalytics';
 
-import img_backblaze_signup_page from '../../../static/backblaze-signup-page.png';
 import discord_logo from '../../../static/discord-logo.png';
 import Rating from '../../components/Rating';
 import {
@@ -87,8 +86,8 @@ export const AttachBackblazeStoragePage = () => {
         To use more storage with <b>Genta.app</b>, attach storage from a third-party provider -
         <b> Backblaze B2</b>. A key feature of <b>Backblaze B2</b>, along with excellent{' '}
         <a target="_blank" href={reliability} rel="noreferrer">reliability</a>
-        , is progressive pricing where you pay for the amount of storage actually used
-        . It's a cost-efficient alternative to "ladder" pricing, where services charge
+        , is progressive pricing where you pay for the amount of storage actually used.
+        It's a cost-efficient alternative to "ladder" pricing, where services charge
         for a fixed amount of storage: 50GB, 200GB or 2000GB{' '}
         regardless of whether you use the full capacity or not.{' '}
         <b><a href="#compare-pricing">See how much you can save.</a></b>
@@ -109,7 +108,42 @@ export const AttachBackblazeStoragePage = () => {
         with a reliable storage at a competitive cost.
       </div>
 
-      <h2>Backblaze B2 Setup</h2>
+      <h2>Attaching a New B2 Storage Bucket</h2>
+
+      <div className="doc-para">
+        The easiest way to start with attached storage is to provide <b>Genta.app</b> with
+        your Backblaze B2 master key and let us create and configure a new bucket and an
+        application key to access to bucket.
+      </div>
+
+      <div className="doc-para">
+        First, if you don't already have a Backblaze B2 account, follow{' '}
+        <a
+          onClick={() => ganalytics.track(ATTACH_BACKBLAZE_STORAGE_B2_SIGNUP_LINK)}
+          href={b2_signup}
+        >
+          this link
+        </a>
+        {' '}and register. Make sure to save your master key ID and the master key somewhere handy.
+      </div>
+
+      <div className="doc-para">
+        Next, follow <Link to="/storage/attach/create">this link</Link> to create and attach
+        a new bucket using your B2 master key.
+      </div>
+
+      <div className="doc-para">
+        Note: <b>Genta.app</b> will only use your master key to create the bucket and configure
+        a limited application key to access the bucket. We will not store or use your master key
+        for actual bucket access.
+      </div>
+
+      <h2>Manually Attach B2 Storage Bucket</h2>
+
+      <div className="doc-para">
+        You can also configure an B2 bucket manually (i.e. without providing your B2 master key
+        to <b>Genta.app</b>) using the steps below.
+      </div>
 
       <div className="doc-para">
         If you don't already have a Backblaze B2 account, follow{' '}
@@ -121,12 +155,12 @@ export const AttachBackblazeStoragePage = () => {
         </a>
         {' '}and register.
       </div>
-      <img className="backblaze-signup-page" alt="backblaze-signup-page" src={img_backblaze_signup_page} />
+
       <div className="doc-para">
         Next, install <b>Backblaze B2 </b>
         <a onClick={() => ganalytics.track(ATTACH_BACKBLAZE_STORAGE_B2_CLI_LINK)} href={b2_cli}>
           command line interface (CLI) tools
-        </a>. The tools will be handy for setting up the storage.
+        </a>.
       </div>
 
       <div className="doc-para">
@@ -180,8 +214,6 @@ export const AttachBackblazeStoragePage = () => {
         Make sure you save them to provide to <b>Genta.app</b>, as described below.
       </div>
 
-      <h2>Genta.app Setup</h2>
-
       <div className="doc-para">
         Go to <a target="_blank" href={genta_storage} rel="noreferrer">storage settings</a>{' '}
         in your <b>Genta.app</b> account and click the <b> "ATTACH STORAGE" </b>
@@ -207,8 +239,11 @@ export const AttachBackblazeStoragePage = () => {
         Click <b>"ATTACH BUCKET"</b> and your newly attached storage is ready.
       </div>
 
+      <h2>Start Using your New Storage</h2>
+
       <div className="doc-para">
-        Now you can{' '}
+        You can now
+        {' '}
         <a
           onClick={() => ganalytics.track(ATTACH_BACKBLAZE_STORAGE_NEW_ALBUM)}
           href={genta_new_album}
