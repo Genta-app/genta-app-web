@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 export function buildVideoStreamURL(file_identifier, file_url, is_short) {
   return `/stream/${is_short ? 's' : 'l'}/${file_identifier}/${file_url}`;
 }

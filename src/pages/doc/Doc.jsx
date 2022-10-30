@@ -24,29 +24,7 @@ import { InformationPolicyPage } from './InformationPolicy';
 import { PrivacyPolicyPage } from './PrivacyPolicy';
 import { TOSPage } from './tos';
 import { AttachBackblazeStoragePage } from './AttachBackblaze';
-
-import * as m from '../../components/Menu';
-
-const DocPageWrapper = ({
-  user, app, albums, children
-}) => {
-  const show_side_menu = app.getShowSideMenu();
-
-  return (
-    <div className="main">
-      <m.TopBar user={user} app={app} />
-      {show_side_menu && (
-        <m.SideMenu
-          user={user}
-          app={app}
-          albums={albums}
-          onClose={() => app.setShowSideMenu(false)}
-        />
-      )}
-      {children}
-    </div>
-  );
-};
+import { PageContentWrapper } from '../PageContentWrapper';
 
 export const DocPage = (props) => {
   const { path } = useRouteMatch();
@@ -54,24 +32,24 @@ export const DocPage = (props) => {
   return (
     <Switch>
       <Route path={`${path}/tos`}>
-        <DocPageWrapper {...props}>
+        <PageContentWrapper {...props}>
           <TOSPage {...props} />
-        </DocPageWrapper>
+        </PageContentWrapper>
       </Route>
       <Route path={`${path}/privacy-policy`}>
-        <DocPageWrapper {...props}>
+        <PageContentWrapper {...props}>
           <PrivacyPolicyPage {...props} />
-        </DocPageWrapper>
+        </PageContentWrapper>
       </Route>
       <Route path={`${path}/information-policy`}>
-        <DocPageWrapper {...props}>
+        <PageContentWrapper {...props}>
           <InformationPolicyPage {...props} />
-        </DocPageWrapper>
+        </PageContentWrapper>
       </Route>
       <Route path={`${path}/attach-backblaze-storage`}>
-        <DocPageWrapper {...props}>
+        <PageContentWrapper {...props}>
           <AttachBackblazeStoragePage {...props} />
-        </DocPageWrapper>
+        </PageContentWrapper>
       </Route>
     </Switch>
   );

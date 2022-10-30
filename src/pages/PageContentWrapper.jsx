@@ -16,20 +16,29 @@
 
 import React from 'react';
 
-export const Select = ({ option, children }: {option: number, children: any}) => children[option];
+import * as m from '../components/Menu';
+import { If } from '../components/JSXFlow';
 
-export const If = ({ condition, children }: {condition: boolean, children: any}) => (
-  condition ? children : null
-);
+export const PageContentWrapper = ({
+  user, app, albums, children, active
+}) => {
+  const show_side_menu = app.getShowSideMenu();
 
-export const ForEach = ({ itemList, render, keyFunc }) => {
-  const Component = render;
-  return itemList.map((item: any) => <Component key={keyFunc(item)} {...{ item }} />);
-};
-
-export const Log = ({ disable, message }) => {
-  if (!disable) {
-    console.log(message);
-  }
-  return <></>;
+  return (
+    <div className="main">
+      <m.TopBar user={user} app={app} />
+      <If condition={show_side_menu}>
+        <m.SideMenu
+          {...{
+            user,
+            app,
+            albums,
+            active
+          }}
+          onClose={() => app.setShowSideMenu(false)}
+        />
+      </If>
+      {children}
+    </div>
+  );
 };

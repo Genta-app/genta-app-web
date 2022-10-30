@@ -957,3 +957,16 @@ export const GraphUp = ({ width, height }) => (
     <path fillRule="evenodd" d="M0 0h1v15h15v1H0V0Zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07Z" />
   </svg>
 );
+
+export const ArrowRightShort = ({ width, height }) => (
+  <svg
+    width={width}
+    height={height}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="currentColor"
+    className="bi bi-arrow-right-short"
+    viewBox="0 0 16 16"
+  >
+    <path fillRule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
+  </svg>
+);

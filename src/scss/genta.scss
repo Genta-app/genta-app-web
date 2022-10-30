@@ -24,6 +24,7 @@
 @use 'processed-google-fonts.scss';
 @use 'signup.scss';
 @use 'account.scss';
+@use 'storage.scss';
 
 html {
     font-size: defs.$font-size;
