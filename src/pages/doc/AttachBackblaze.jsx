@@ -178,8 +178,7 @@ export const AttachBackblazeStoragePage = () => {
         Run the following command to create a new bucket with settings for <b>Genta.app</b>
         . Note that Backblaze B2 requires bucket names to be globally unique. The below
         command uses a securely generated random name suffix and should be safe
-        to use as-is without a risk of creating a guessable bucket name: <br /><br /><b>Note: </b>
-        This page is generated locally only for you providing you with a unique name.
+        to use as-is without a risk of creating a guessable bucket name:
       </div>
 
       <div className="code">{create_bucket_command}</div>
