@@ -113,9 +113,9 @@ const LandingPage = ({ app, user }) => {
             }}
             onClick={() => {
               ganalytics.track(LANDING_INVITE_APPLY);
-              history.push('/apply');
+              history.push('/signup');
             }}
-            title="APPLY FOR INVITE"
+            title="SIGN UP"
           />
         </div>
         <div className="landing-what-is-beta" style={{ width: '17rem' }}>
@@ -149,7 +149,7 @@ const LandingPage = ({ app, user }) => {
           . US&nbsp;$0.99/month afterwards
           <br />
           <br />
-          <Link to="/apply" className="landing-infobox-link">APPLY FOR INVITE</Link>
+          <Link to="/signup" className="landing-infobox-link">SIGN UP</Link>
         </LandingInfoBox>
         <LandingInfoBox title="Attach Storage" leftIcon={IconHDDNetwork}>
           Leverage the full power of your Genta.app account, attach Backblaze B2 storage
