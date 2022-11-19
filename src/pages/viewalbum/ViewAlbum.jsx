@@ -54,8 +54,10 @@ import {
   uploadTextFile,
   createTextFile,
   sameYMD,
-  mimeTypeFromFilename,
   mergeFileListsForTimeline,
+  getURLForBucketPath,
+  loadAndDecryptFile,
+  loadAndDecryptMainImage,
   STOCK_FILE_TYPE_TEXT,
   STOCK_FILE_TYPE_IMAGE,
   STOCK_FILE_TYPE_VIDEO,
@@ -91,24 +93,6 @@ import {
 
 import { httpGetBinary } from '../../library/Req';
 import { DirectLinkDialog, ConfirmDeleteDialog } from './ViewAlbumDialogs';
-
-function getFileURL(app, stock_file, album, download_url, download_auth) {
-  return getURLForBucketPath(
-    album, download_url, download_auth, stock_file.getBucketPath()
-  );
-}
-
-function getURLForBucketPath(album, download_url, download_auth, bucket_path) {
-  const bucket_name = album.getBucketName();
-  return (download_url + '/file/' + bucket_name + '/' + bucket_path
-    + '?Authorization=' + download_auth);
-}
-
-function getThumbURL(app, stockFile, album, download_url, download_auth) {
-  const bucket_name = album.getBucketName();
-  return (download_url + '/file/' + bucket_name + '/' + stockFile.getThumbBucketPath()
-    + '?Authorization=' + download_auth);
-}
 
 function isSameDay(d1, d2) {
   return (
@@ -1156,34 +1140,11 @@ export class ViewAlbumPage extends Page {
 
     // load main image
     loadAndDecryptMainImage = async (album, f, preload) => {
-      const t = f.getFileType();
-      const encrypted = f.getEncrypted();
-
-      const { files } = this.state;
-
-      if ((t === STOCK_FILE_TYPE_IMAGE /* || t == STOCK_FILE_TYPE_VIDEO */)
-        && f.getImageDataURL() == null) {
+      if (f.getFileType() === STOCK_FILE_TYPE_IMAGE && f.getImageDataURL() == null) {
+        const { files } = this.state;
         const { app } = this.props;
 
-        const mime_type = mimeTypeFromFilename(f.getName());
-
-        const album_identifier = album.getAlbumIdentifier();
-        const { download_auth, download_url } = await app.getAlbumDownloadAuth(album_identifier);
-
-        const file_url = getFileURL(app, f, album, download_url, download_auth);
-
-        if (encrypted) {
-          const file_contents_xhr = await httpGetBinary(file_url);
-          const encrypted_data = new Uint8Array(Buffer.from(file_contents_xhr.response));
-          const decrypted_data = crypto.symmetricDecrypt(f.getFileKey(), encrypted_data);
-          const contents_resppack = unpackValue(decrypted_data);
-          const image_data = URL.createObjectURL(
-            new Blob([contents_resppack.file.data], { type: mime_type })
-          );
-          f.setImageDataURL(image_data);
-        } else {
-          f.setImageDataURL(file_url);
-        }
+        await loadAndDecryptMainImage(app, album, f);
 
         const { large_view_item_index } = this.state;
 
@@ -1214,69 +1175,22 @@ export class ViewAlbumPage extends Page {
 
     // for images, this only loads the thumbnail
     loadAndDecryptFile = async (album, f) => {
-      // TODO: check if this function is sometimes called
-      // for files which have the thumbnail already loaded
-
-      try {
-        f.setDataLoadInProgress(true);
-
-        const t = f.getFileType();
-        const encrypted = album.getEncrypted();
-
-        if (t === STOCK_FILE_TYPE_IMAGE || t === STOCK_FILE_TYPE_VIDEO) {
-          const { app } = this.props;
-
-          const album_identifier = album.getAlbumIdentifier();
-          const { download_auth, download_url } = await app.getAlbumDownloadAuth(album_identifier);
-
-          const file_url = getThumbURL(app, f, album, download_url, download_auth);
-
-          const index_loaded = (t === STOCK_FILE_TYPE_VIDEO)
-            ? await app.loadFileIndexInfo(album, f)
-            : false;
-
-          // f.setDownloadURL(file_url);
-          if (encrypted) {
-            const file_contents_xhr = await httpGetBinary(file_url);
-            const encrypted_data = new Uint8Array(Buffer.from(file_contents_xhr.response));
-            const decrypted_data = crypto.symmetricDecrypt(f.getFileKey(), encrypted_data);
-            const contents_resppack = unpackValue(decrypted_data);
-            const image_data = URL.createObjectURL(
-              new Blob([contents_resppack.thumb.data], { type: 'image/jpeg' })
-            );
-
-            f.setThumbDataURL(image_data);
-          } else { // clear
-            f.setThumbDataURL(file_url);
-
-            // for clear video files, load authorized URL of the main video file
-            // NOTE: when streaming videos is supported, this should be URL of the
-            // streaming video file
-            if (t === STOCK_FILE_TYPE_VIDEO && index_loaded) {
-              const video_index_info = f.getIndexInfo(MEDIA_TYPE_VIDEO);
-              const file_url = getURLForBucketPath(
-                album,
-                download_url,
-                download_auth,
-                video_index_info.large_file_bucket_path
-              );
-              video_index_info.clear_download_url = file_url;
-            }
-          }
-          f.setDataLoaded();
-        }
-
+      const success = await loadAndDecryptFile(this.props.app, album, f);
+      if (success) {
         if (this.state.files !== null) {
           this.setState({ loaded: this.state.files.map(f => f.getDataLoaded()) });
         }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        f.setDataLoadInProgress(false);
       }
     }
 
     loadAlbumFiles = async (album, yyyymmdd) => {
+      const foreign = album.getOwnerEmail() !== '';
+      const accepted = album.getAccepted();
+
+      if (foreign && !accepted) {
+        return;
+      }
+
       if (yyyymmdd != null) {
         const file_list = await apiFileList(album, yyyymmdd, null);
         await this.setStatePromise({ files: file_list, album });
@@ -1487,6 +1401,8 @@ export class ViewAlbumPage extends Page {
         thumb_size
       } = this.state;
 
+      const { history } = this.props;
+
       const render_list = [];
       let render_image_batch = [];
       // eslint-disable-next-line prefer-const
@@ -1537,7 +1453,13 @@ export class ViewAlbumPage extends Page {
             }
 
             render_image_batch.push(<ImageThumbItem
-              album={album}
+              {...{
+                album,
+                left_pad,
+                right_pad,
+                thumb_size,
+                history,
+              }}
               key={files[index].getFileIdentifier()}
               selected={selected_items.includes(files[index])}
               item={files[index]}
@@ -1545,9 +1467,6 @@ export class ViewAlbumPage extends Page {
               downloading={this.isFileDownloaded(item)}
               playing={this.isFilePlayed(item)}
               moving={move_items.includes(item)}
-              left_pad={left_pad}
-              right_pad={right_pad}
-              thumb_size={thumb_size}
             />);
             break;
           case STOCK_FILE_TYPE_TEXT:
@@ -1963,15 +1882,17 @@ export class ViewAlbumPage extends Page {
 
       return (
         <div className="view-accept-album-main">
-          <div style={{ margin: '1rem 0' }}>
-            User <b>{email}</b> wants to share their album <b>{name}</b> with you.
+          <div style={{ margin: '1rem 0', textAlign: 'center' }}>
+            User <b>{email}</b> wants to share their album <b>{name}</b> with you
           </div>
-          <div>Would you like to accept and start viewing the album?</div>
           {album.getCanAddFiles() && (
-            <div style={{ margin: '1rem 0' }}>
+            <div style={{ margin: '1rem 0', textAlign: 'center' }}>
               You will be able to add photos and videos to the album
             </div>
           )}
+          <div style={{ margin: '1rem 0', textAlign: 'center' }}>
+            Would you like to accept the invitation and start accessing the album?
+          </div>
           <c.WhiteButton
             title="ACCEPT"
             onClick={() => this.handleRespondSharedAlbum(
@@ -2015,7 +1936,9 @@ export class ViewAlbumPage extends Page {
       //    show_side_menu ? "main-panel-with-menu" : "main-panel-centered";
       const main_panel_class = 'main-panel-centered';
 
-      if (mode !== this.PAGE_MODE_FREE_ACCOUNT_NO_ALBUMS && (!album || files === null)) {
+      if (mode !== this.PAGE_MODE_FREE_ACCOUNT_NO_ALBUMS
+        && mode !== this.PAGE_MODE_ACCEPT_SHARED_ALBUM
+        && (!album || files === null)) {
         return <LoadingScreen />;
       }
 
@@ -2030,7 +1953,7 @@ export class ViewAlbumPage extends Page {
         );
       }
 
-      const can_upload = album != null && (album.getOwnerEmail() === '' || album.getCanAddFiles());
+      const can_upload = mode !== album != null && (album.getOwnerEmail() === '' || album.getCanAddFiles());
 
       return (
         <>

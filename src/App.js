@@ -73,6 +73,7 @@ import { AccountPage } from './pages/Account';
 import { SubscriptionPage } from './pages/Subscription';
 import { DocPage } from './pages/doc/Doc';
 import { ApplyForInvitePage } from './pages/ApplyForInvite';
+import { EditPage } from './pages/Edit';
 
 function ScrollToTop() {
   const history = useHistory();
@@ -564,6 +565,18 @@ class App extends React.Component {
                 path="/storage"
                 render={props => (
                   <StoragePage
+                    {...props}
+                    app={this}
+                    albums={albums}
+                    buckets={buckets}
+                    user={user}
+                  />
+                )}
+              />
+              <Route
+                path="/edit/:item_ident"
+                render={props => (
+                  <EditPage
                     {...props}
                     app={this}
                     albums={albums}

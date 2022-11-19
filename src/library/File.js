@@ -30,11 +30,12 @@ import {
   _bytes_to_array
 } from './Pack';
 
-import { httpPost } from './Req';
+import { httpPost, httpGetBinary, } from './Req';
 import { dateToYYYYMMDD } from './Format';
 
 import {
   apiFileCreate,
+  apiFileUpdate,
   apiBucketUploadToken,
   apiLargeFileStart,
   apiLargeFileGetPartUploadURL,
@@ -154,6 +155,117 @@ export function readFile(inputFileObj, offset, length) {
   });
 }
 
+export function getThumbURL(app, stockFile, album, download_url, download_auth) {
+  const bucket_name = album.getBucketName();
+  return (download_url + '/file/' + bucket_name + '/' + stockFile.getThumbBucketPath()
+    + '?Authorization=' + download_auth);
+}
+
+export function getURLForBucketPath(album, download_url, download_auth, bucket_path) {
+  const bucket_name = album.getBucketName();
+  return (download_url + '/file/' + bucket_name + '/' + bucket_path
+    + '?Authorization=' + download_auth);
+}
+
+export function getFileURL(app, stock_file, album, download_url, download_auth) {
+  return getURLForBucketPath(
+    album, download_url, download_auth, stock_file.getBucketPath()
+  );
+}
+
+// for images, this only loads the thumbnail
+export const loadAndDecryptFile = async (app, album, f) => {
+  // TODO: check if this function is sometimes called
+  // for files which have the thumbnail already loaded
+
+  let success = false;
+
+  try {
+    f.setDataLoadInProgress(true);
+
+    const t = f.getFileType();
+    const encrypted = album.getEncrypted();
+
+    if (t === STOCK_FILE_TYPE_IMAGE || t === STOCK_FILE_TYPE_VIDEO) {
+      const album_identifier = album.getAlbumIdentifier();
+      const { download_auth, download_url } = await app.getAlbumDownloadAuth(album_identifier);
+
+      const file_url = getThumbURL(app, f, album, download_url, download_auth);
+
+      const index_loaded = (t === STOCK_FILE_TYPE_VIDEO)
+        ? await app.loadFileIndexInfo(album, f)
+        : false;
+
+      // f.setDownloadURL(file_url);
+      if (encrypted) {
+        const file_contents_xhr = await httpGetBinary(file_url);
+        const encrypted_data = new Uint8Array(Buffer.from(file_contents_xhr.response));
+        const decrypted_data = crypto.symmetricDecrypt(f.getFileKey(), encrypted_data);
+        const contents_resppack = unpackValue(decrypted_data);
+        const image_data = URL.createObjectURL(
+          new Blob([contents_resppack.thumb.data], { type: 'image/jpeg' })
+        );
+
+        f.setThumbDataURL(image_data);
+      } else { // clear
+        f.setThumbDataURL(file_url);
+
+        // for clear video files, load authorized URL of the main video file
+        // NOTE: when streaming videos is supported, this should be URL of the
+        // streaming video file
+        if (t === STOCK_FILE_TYPE_VIDEO && index_loaded) {
+          const video_index_info = f.getIndexInfo(MEDIA_TYPE_VIDEO);
+          // eslint-disable-next-line no-shadow
+          const file_url = getURLForBucketPath(
+            album,
+            download_url,
+            download_auth,
+            video_index_info.large_file_bucket_path
+          );
+          video_index_info.clear_download_url = file_url;
+        }
+      }
+      f.setDataLoaded();
+    }
+
+    success = true;
+  } catch (err) {
+    console.error(err);
+  } finally {
+    f.setDataLoadInProgress(false);
+  }
+  return success;
+};
+
+// load main image
+export const loadAndDecryptMainImage = async (app, album, f) => {
+  const t = f.getFileType();
+  const encrypted = f.getEncrypted();
+
+  if ((t === STOCK_FILE_TYPE_IMAGE /* || t == STOCK_FILE_TYPE_VIDEO */)
+    && f.getImageDataURL() == null) {
+    const mime_type = mimeTypeFromFilename(f.getName());
+
+    const album_identifier = album.getAlbumIdentifier();
+    const { download_auth, download_url } = await app.getAlbumDownloadAuth(album_identifier);
+
+    const file_url = getFileURL(app, f, album, download_url, download_auth);
+
+    if (encrypted) {
+      const file_contents_xhr = await httpGetBinary(file_url);
+      const encrypted_data = new Uint8Array(Buffer.from(file_contents_xhr.response));
+      const decrypted_data = crypto.symmetricDecrypt(f.getFileKey(), encrypted_data);
+      const contents_resppack = unpackValue(decrypted_data);
+      const image_data = URL.createObjectURL(
+        new Blob([contents_resppack.file.data], { type: mime_type })
+      );
+      f.setImageDataURL(image_data);
+    } else {
+      f.setImageDataURL(file_url);
+    }
+  }
+};
+
 async function uploadDataToB2(
   app, album, file_bucket_path, mime_type, file_digest, upload_file_bucket_pack
 ) {
@@ -235,8 +347,10 @@ async function uploadDataToB2(
 export async function uploadImageFile(
   app, user, album, filename, file_type /* STOCK_FILE_TYPE_... */,
   file_key, file_contents, thumbnail, file_date, orientation, media_type,
-  encrypted, ordering
+  encrypted, ordering, existing_file_identifier,
 ) {
+  // if existing_file_identifier is not null, then it's an update for an existing file
+
   const album_identifier = album.getAlbumIdentifier();
   const album_key = encrypted ? album.getAlbumKey() : null;
 
@@ -328,25 +442,50 @@ export async function uploadImageFile(
     : null
   );
 
-  const file_pack = packValue({
-    file: {
-      album: album_identifier,
-      encrypted_key: encrypted ? encrypted_file_key : 0,
-      encrypted_data: encrypted ? upload_data_pack : 0,
-      clear_data: encrypted ? 0 : upload_data_pack,
-      bucket_size,
-      file_date: dateToYYYYMMDD(file_date),
-      media_type,
-      bucket_file_id,
-      bucket_file_name,
-      bucket_thumb_id,
-      bucket_thumb_name,
-      encrypted,
-      ordering,
-    },
-  });
+  let xhr_file;
 
-  const xhr_file = await apiFileCreate(file_pack);
+  if (existing_file_identifier) {
+    const file_pack = packValue({
+      file: {
+        identifier: existing_file_identifier,
+        album: album_identifier,
+        encrypted_key: encrypted_file_key,
+        encrypted_data: upload_data_pack,
+        clear_data: 0,
+        bucket_size,
+        file_date: dateToYYYYMMDD(file_date),
+        media_type,
+        bucket_file_id,
+        bucket_file_name,
+        bucket_thumb_id,
+        bucket_thumb_name,
+        encrypted,
+        ordering,
+      },
+    });
+
+    xhr_file = await apiFileUpdate(file_pack);
+  } else {
+    const file_pack = packValue({
+      file: {
+        album: album_identifier,
+        encrypted_key: encrypted ? encrypted_file_key : 0,
+        encrypted_data: encrypted ? upload_data_pack : 0,
+        clear_data: encrypted ? 0 : upload_data_pack,
+        bucket_size,
+        file_date: dateToYYYYMMDD(file_date),
+        media_type,
+        bucket_file_id,
+        bucket_file_name,
+        bucket_thumb_id,
+        bucket_thumb_name,
+        encrypted,
+        ordering,
+      },
+    });
+
+    xhr_file = await apiFileCreate(file_pack);
+  }
 
   if (xhr_file.status !== 200) {
     return { file_identifier: null, status: xhr_file.status };
