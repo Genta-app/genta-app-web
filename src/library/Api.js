@@ -464,8 +464,67 @@ export async function apiFileList(album /* Album */, yyyymmdd, file_identifier, 
   return files;
 }
 
+export async function apiGetFile(file_identifier, albums) {
+  const xhr = await httpGetBinary(`${API_BASE_URL}/file?file=${file_identifier}`);
+  const resppack = unpackValue(xhr.response);
+
+  const files = [];
+  const file_albums = [];
+
+  for (const f of resppack.files) {
+    // eslint-disable-next-line no-shadow
+    const file_identifier = f.identifier;
+    const album = albums.find(a => a.getAlbumIdentifier() === f.album_identifier);
+    if (album === undefined) {
+      return null;
+    }
+
+    file_albums.push(album);
+
+    const file_key = crypto.symmetricDecrypt(album.getAlbumKey(), f.encrypted_key);
+    const file_data_pack = crypto.symmetricDecrypt(file_key, f.encrypted_data);
+
+    const file_data = unpackValue(file_data_pack);
+
+    let file_comment = '';
+    try {
+      if (f.comment.length > 0) {
+        file_comment = await crypto.symmetricDecryptString(file_key, f.comment);
+      }
+    } catch (e) {
+      console.log(e);
+      file_comment = '-';
+    }
+
+    files.push(new StockFile(
+      file_identifier,
+      file_key,
+      file_data.file.name,
+      file_data.file.path,
+      file_data.file.thumbpath,
+      file_data.file.file_id || '',
+      file_data.file.thumb_id || '',
+      f.file_date,
+      f.file_ordering,
+      file_data.file.orientation,
+      file_comment,
+      file_data.file.file_type || STOCK_FILE_TYPE_IMAGE,
+      f.bucket_size,
+      1, // encrypted
+      f.can_edit_file,
+      f.can_delete_file,
+    ));
+  }
+
+  return [files, file_albums];
+}
+
 export async function apiFileCreate(pack /* Uint8Array */) {
   return /* await */ httpPost(API_BASE_URL + '/file', pack, {}, 'arraybuffer');
+}
+
+export async function apiFileUpdate(pack /* Uint8Array */) {
+  return /* await */ httpPut(API_BASE_URL + '/file', pack, {}, 'arraybuffer');
 }
 
 export async function apiFileSetComment(pack /* Uint8Array */) {
@@ -478,7 +537,6 @@ export async function apiFileDownloadToken(stock_file) {
   });
   return /* await */ httpPost(API_BASE_URL + '/file-download-token', pack, {}, 'arraybuffer');
 }
-
 
 export async function apiFileCreateDirectLink(pack /* Uint8Array */) {
   return /* await */ httpPost(API_BASE_URL + '/file-direct-link', pack);

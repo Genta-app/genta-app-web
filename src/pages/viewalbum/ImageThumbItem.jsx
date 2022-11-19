@@ -36,6 +36,8 @@ import * as platform from '../../library/Platform';
 
 import { DirectLinkDialog, ConfirmDeleteDialog, MovingDialog } from './ViewAlbumDialogs';
 
+import { If } from '../../components/JSXFlow';
+
 import {
   STOCK_FILE_TYPE_IMAGE,
   STOCK_FILE_TYPE_VIDEO,
@@ -127,7 +129,9 @@ export class ImageThumbItem extends React.Component {
     }
 
     renderItemMenu(is_image) {
-      const { item, page } = this.props;
+      const { item, page, history } = this.props;
+
+      const dim = '1.6rem';
 
       if (!item.getCanEditFile()) {
         return <></>;
@@ -145,11 +149,20 @@ export class ImageThumbItem extends React.Component {
           }}
           className="view-album-photo-thumb-menu"
         >
-          {is_image && (
+          <If condition={is_image && item.getCanEditFile() === 1}>
+            <c.MenuButton
+              key={6}
+              data-testid="thumb-menu-crop"
+              icon={<icon.Crop width={dim} height={dim} />}
+              title="Crop Item"
+              onClick={() => history.push(`/edit/${item.getFileIdentifier()}`)}
+            />
+          </If>
+          <If condition={is_image}>
             <c.MenuButton
               key={1}
               data-testid="thumb-menu-direct-link"
-              icon={<icon.ChainLinks width="2rem" height="2rem" />}
+              icon={<icon.ChainLinks width={dim} height={dim} />}
               onClick={async () => {
                 await this.setState({ mode: this.MODE_DIRECT_LINK, direct_link: null });
                 const url = await page.createDirectLink(item);
@@ -157,11 +170,11 @@ export class ImageThumbItem extends React.Component {
               }}
               title="Direct Link"
             />
-          )}
+          </If>
           <c.MenuButton
             key={2}
             data-testid="thumb-menu-move-image"
-            icon={<icon.FourArrows width="2rem" height="2rem" />}
+            icon={<icon.FourArrows width={dim} height={dim} />}
             onClick={() => {
               this.setState({ mode: this.MODE_DEFAULT });
               page.handleStartMovingThumbs([item]);
@@ -171,33 +184,33 @@ export class ImageThumbItem extends React.Component {
           <c.MenuButton
             key={4}
             data-testid="thumb-menu-para-above"
-            icon={<icon.TextAboveImage width="2rem" height="2rem" />}
+            icon={<icon.TextAboveImage width={dim} height={dim} />}
             onClick={() => page.handleAddText(item, true)}
             title="+ Paragraph Above"
           />
           <c.MenuButton
             key={3}
             data-testid="thumb-menu-para-below"
-            icon={<icon.TextBelowImage width="2rem" height="2rem" />}
+            icon={<icon.TextBelowImage width={dim} height={dim} />}
             onClick={() => page.handleAddText(item, false)}
             title="+ Paragraph Below"
           />
           <c.MenuButton
             key={5}
             data-testid="thumb-menu-comment"
-            icon={<icon.BaloonText width="2rem" height="2rem" />}
+            icon={<icon.BaloonText width={dim} height={dim} />}
             onClick={this.editComment}
             title="Image Comment"
           />
-          {item.getCanDeleteFile() === 1 && (
+          <If condition={item.getCanDeleteFile() === 1}>
             <c.MenuButton
               key={6}
               data-testid="thumb-menu-delete"
-              icon={<icon.WasteBin width="2rem" height="2rem" />}
+              icon={<icon.WasteBin width={dim} height={dim} />}
               title="Delete Item"
               onClick={() => this.setState({ mode: this.MODE_CONFIRM_DELETE })}
             />
-          )}
+          </If>
         </div>
       );
     }

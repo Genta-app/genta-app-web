@@ -42,6 +42,8 @@ import * as file from '../library/File';
 
 import * as platform from '../library/Platform';
 
+import { canvasToBlob } from '../library/Utils';
+
 import {
   formatSize,
   formatDate,
@@ -69,13 +71,7 @@ async function renderElementToBuffer(el, width, height) {
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(el, 0, 0, width, height);
 
-  const blob = await (new Promise((resolve) => {
-    // eslint-disable-next-line no-shadow
-    canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.9);
-  }));
-
-  const buffer = await blob.arrayBuffer();
-  return new Uint8Array(buffer);
+  return canvasToBlob(canvas);
 }
 
 function getAlbumNameWithOwner(a) {

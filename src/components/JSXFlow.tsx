@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 
 export const Select = ({ option, children }: {option: number, children: any}) => children[option];
 
@@ -32,4 +32,14 @@ export const Log = ({ disable, message }) => {
     console.log(message);
   }
   return <></>;
+};
+
+export const useRefState = (initializer) => {
+  const [value, setValue] = useState(initializer);
+  const valueRef = useRef(value);
+  const setValueByRef = (val) => {
+    valueRef.current = val;
+    setValue(val);
+  };
+  return [valueRef, setValueByRef];
 };
