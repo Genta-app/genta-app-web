@@ -84,7 +84,6 @@ export const EditPage = (props) => {
   const [crop_x_ref, setCropX] = useRefState(0);
   const [crop_y_ref, setCropY] = useRefState(0);
 
-  const [events_attached, setEventsAttached] = useState(false);
   const [canvas_inited, setCanvasInited] = useState(false);
 
   const loadItem = async () => {
@@ -315,12 +314,14 @@ export const EditPage = (props) => {
   ]);
 
   useEffect(() => {
-    if (!events_attached) {
-      document.addEventListener('pointermove', slide);
-      document.addEventListener('pointerup', stopSlide);
-      setEventsAttached(true);
-    }
-  }, [events_attached]);
+    document.addEventListener('pointermove', slide);
+    document.addEventListener('pointerup', stopSlide);
+
+    return () => {
+      document.removeEventListener('pointermove', slide);
+      document.removeEventListener('pointerup', stopSlide);
+    };
+  }, []);
 
   const getRatios = () => {
     let w_ratio = 1;
