@@ -20,10 +20,12 @@ import React from 'react';
 
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 
+import { TOCPage } from './TOC';
+import { AttachBackblazeStoragePage } from './AttachBackblaze';
+import { KeyboardPage } from './Keyboard';
 import { InformationPolicyPage } from './InformationPolicy';
 import { PrivacyPolicyPage } from './PrivacyPolicy';
 import { TOSPage } from './tos';
-import { AttachBackblazeStoragePage } from './AttachBackblaze';
 import { PageContentWrapper } from '../PageContentWrapper';
 
 export const DocPage = (props) => {
@@ -31,6 +33,11 @@ export const DocPage = (props) => {
 
   return (
     <Switch>
+      <Route exact path={[`${path}`, `${path}/`]}>
+        <PageContentWrapper {...props}>
+          <TOCPage {...props} />
+        </PageContentWrapper>
+      </Route>
       <Route path={`${path}/tos`}>
         <PageContentWrapper {...props}>
           <TOSPage {...props} />
@@ -49,6 +56,11 @@ export const DocPage = (props) => {
       <Route path={`${path}/attach-backblaze-storage`}>
         <PageContentWrapper {...props}>
           <AttachBackblazeStoragePage {...props} />
+        </PageContentWrapper>
+      </Route>
+      <Route path={`${path}/keyboard`}>
+        <PageContentWrapper {...props}>
+          <KeyboardPage {...props} />
         </PageContentWrapper>
       </Route>
     </Switch>

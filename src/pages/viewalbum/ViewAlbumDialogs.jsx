@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 //
 // Copyright (c) 2022 Digital Five Pty Ltd
 //
@@ -87,6 +88,25 @@ export const ConfirmDeleteDialog = ({ onDelete, onClose, global }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <c.DangerButtonSm title="DELETE" onClick={onDelete} />
         <c.WhiteButtonSm title="CANCEL" onClick={onClose} />
+      </div>
+    </div>
+  );
+};
+
+export const ConfirmDeleteSelectionDialog = ({ selected_items, onDelete, onClose }) => {
+  return (
+    <div className="view-album-selection-dialog">
+      <div>
+        <div className="view-album-selection-dialog-title">
+          DELETE {selected_items.length} SELECTED ITEMS?
+        </div>
+        <div className="view-album-selection-dialog-text">
+          THIS CANNOT BE UNDONE
+        </div>
+        <div className="view-album-selection-dialog-buttons">
+          <c.DangerButtonSm autoFocus title="DELETE" onClick={onDelete} />
+          <c.WhiteButtonSm title="CANCEL" onClick={onClose} />
+        </div>
       </div>
     </div>
   );

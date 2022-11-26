@@ -90,8 +90,9 @@ export class ImageThumbItem extends React.Component {
   }
 
     editComment = () => {
-      const { item } = this.props;
+      const { item, page } = this.props;
       this.setState({ mode: this.MODE_EDIT_COMMENT, edit_comment_text: item.getComment() });
+      page.setState({ edit_comment_item: item });
     }
 
     renderSelection() {
@@ -228,7 +229,10 @@ export class ImageThumbItem extends React.Component {
               await page.handleSaveImageComment(item, text);
               this.setState({ mode: this.MODE_DEFAULT });
             }}
-            onCancel={() => this.setState({ mode: this.MODE_DEFAULT })}
+            onCancel={() => {
+              this.setState({ mode: this.MODE_DEFAULT });
+              page.setState({ edit_comment_item: null });
+            }}
           />
         );
       } else {
@@ -259,7 +263,8 @@ export class ImageThumbItem extends React.Component {
         right_pad,
         selected,
         can_delete,
-        thumb_size
+        thumb_size,
+        keyboard_focus,
       } = this.props;
       const { mode, direct_link } = this.state;
 
@@ -344,9 +349,12 @@ export class ImageThumbItem extends React.Component {
               ref={ref => page.imageThumbRefCallback(ref, item)}
               className={`view-album-photo-thumb-${thumb_size}`}
             >
+              <If condition={keyboard_focus}>
+                <div className="view-album-photo-thumb-keyboard-focus" />
+              </If>
               {is_video /* && video_url == null */ && (
                 <div
-                  onClick={() => page.gotoLargeView(album, item, true)}
+                  onClick={() => page.gotoLargeView(album, item)}
                   onContextMenu={on_context_menu}
                   className="view-album-photo-thumb-download"
                 >

@@ -455,14 +455,17 @@ export const DropdownList = ({
 );
 
 export const ButtonBase = ({
-  disabled, onClick, title, style, className
+  disabled, onClick, title, style, className, autoFocus
 }) => (
   <>
     <button
-      className={className}
-      style={style}
-      disabled={disabled}
-      onClick={onClick}
+      {...{
+        autoFocus,
+        className,
+        style,
+        disabled,
+        onClick,
+      }}
     >
       {title}
     </button>

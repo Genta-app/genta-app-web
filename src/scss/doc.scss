@@ -83,3 +83,9 @@
     cursor: pointer;
     fill: rgba(255, 255, 255, 0.75);
 }
+
+.doc-keyboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  margin: 0.5rem 0;
+}
