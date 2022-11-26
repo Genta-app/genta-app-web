@@ -20,6 +20,7 @@ $control-width: 25rem;
 $control-width-mobile: 18rem;
 
 $control-margin: 4rem;
+$control-focus-border-width: 3px;
 
 %control-transition {
     transition:
@@ -194,17 +195,7 @@ $control-margin: 4rem;
     border: 2px solid defs.$color-primary-btn-border;
 }
 
-.form-button-primary:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-primary-btn-border-disabled;
-}
-
-.form-button-primary:hover:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-primary-btn-border-disabled;
-}
-
-.form-button-primary:focus:disabled {
+.form-button-primary:disabled, .form-button-primary:hover:disabled, .form-button-primary:focus:disabled {
     background-color: defs.$color-transparent;
     border: 2px solid defs.$color-primary-btn-border-disabled;
 }
@@ -214,22 +205,15 @@ $control-margin: 4rem;
     color: defs.$color-btn-hover-text;
 }
 
+.form-button-primary:focus {
+  outline: $control-focus-border-width solid defs.$color-primary-btn-focus-outline;
+}
 
 .form-button-secondary {
     border: 2px solid defs.$color-secondary-btn-border;
 }
 
-.form-button-secondary:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-secondary-btn-border-disabled;
-}
-
-.form-button-secondary:hover:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-secondary-btn-border-disabled;
-}
-
-.form-button-secondary:focus:disabled {
+.form-button-secondary:disabled, .form-button-secondary:hover:disabled, .form-button-secondary:focus:disabled {
     background-color: defs.$color-transparent;
     border: 2px solid defs.$color-secondary-btn-border-disabled;
 }
@@ -240,28 +224,15 @@ $control-margin: 4rem;
 }
 
 .form-button-secondary:focus {
-    outline: 2px solid defs.$color-secondary-btn-focus-outline;
+    outline: $control-focus-border-width solid defs.$color-secondary-btn-focus-outline;
 }
 
-.form-button-primary:focus {
-    outline: 2px solid defs.$color-primary-btn-focus-outline;
-}
 
 .form-button-warning {
     border: 2px solid defs.$color-warning-btn-border;
 }
 
-.form-button-warning:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-warning-btn-border-disabled;
-}
-
-.form-button-warning:hover:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-warning-btn-border-disabled;
-}
-
-.form-button-warning:focus:disabled {
+.form-button-warning:disabled, .form-button-warning:hover:disabled, .form-button-warning:focus:disabled {
     background-color: defs.$color-transparent;
     border: 2px solid defs.$color-warning-btn-border-disabled;
 }
@@ -272,25 +243,14 @@ $control-margin: 4rem;
 }
 
 .form-button-warning:focus {
-    outline: 2px solid defs.$color-warning-btn-focus-outline;
+    outline: $control-focus-border-width solid defs.$color-warning-btn-focus-outline;
 }
-
 
 .form-button-danger {
     border: 2px solid defs.$color-danger-btn-border;
 }
 
-.form-button-danger:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-danger-btn-border-disabled;
-}
-
-.form-button-danger:hover:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-danger-btn-border-disabled;
-}
-
-.form-button-danger:focus:disabled {
+.form-button-danger:disabled, .form-button-danger:hover:disabled, .form-button-danger:focus:disabled {
     background-color: defs.$color-transparent;
     border: 2px solid defs.$color-danger-btn-border-disabled;
 }
@@ -301,24 +261,14 @@ $control-margin: 4rem;
 }
 
 .form-button-danger:focus {
-    outline: 2px solid defs.$color-danger-btn-focus-outline;
+    outline: $control-focus-border-width solid defs.$color-danger-btn-focus-outline;
 }
 
 .form-button-white {
     border: 2px solid defs.$color-white-btn-border;
 }
 
-.form-button-white:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-white-btn-border-disabled;
-}
-
-.form-button-white:hover:disabled {
-    background-color: defs.$color-transparent;
-    border: 2px solid defs.$color-white-btn-border-disabled;
-}
-
-.form-button-white:focus:disabled {
+.form-button-white:disabled, .form-button-white:hover:disabled, .form-button-white:focus:disabled {
     background-color: defs.$color-transparent;
     border: 2px solid defs.$color-white-btn-border-disabled;
 }
@@ -329,7 +279,7 @@ $control-margin: 4rem;
 }
 
 .form-button-white:focus {
-    outline: 2px solid defs.$color-white-btn-focus-outline;
+    outline: $control-focus-border-width solid defs.$color-white-btn-focus-outline;
 }
 
 
@@ -339,18 +289,8 @@ $control-margin: 4rem;
     color: white;
 }
 
-.form-button-superwhite:disabled {
+.form-button-superwhite:disabled, .form-button-superwhite:hover:disabled, .form-button-superwhite:focus:disabled {
     background-color: rgba(255, 255, 255, 0.1);
-    border: 2px solid defs.$color-white-btn-border-disabled;
-}
-
-.form-button-superwhite:hover:disabled {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 2px solid defs.$color-white-btn-border-disabled;
-}
-
-.form-button-superwhite:focus:disabled {
-    background-color: defs.$color-transparent;
     border: 2px solid defs.$color-white-btn-border-disabled;
 }
 
@@ -360,7 +300,7 @@ $control-margin: 4rem;
 }
 
 .form-button-superwhite:focus {
-    outline: 2px solid defs.$color-white-btn-focus-outline;
+    outline: $control-focus-border-width solid defs.$color-white-btn-focus-outline;
 }
 
 // free text on the form

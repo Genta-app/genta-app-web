@@ -92,7 +92,11 @@ import {
 } from '../../library/Api';
 
 import { httpGetBinary } from '../../library/Req';
-import { DirectLinkDialog, ConfirmDeleteDialog } from './ViewAlbumDialogs';
+import {
+  DirectLinkDialog,
+  ConfirmDeleteDialog,
+  ConfirmDeleteSelectionDialog,
+} from './ViewAlbumDialogs';
 
 function isSameDay(d1, d2) {
   return (
@@ -101,6 +105,24 @@ function isSameDay(d1, d2) {
     && d1.getYear() === d2.getYear()
   );
 }
+
+const getPrevItemOfType = (files, current_index, item_type_list) => {
+  for (let i = current_index - 1; i >= 0; i -= 1) {
+    if (item_type_list.includes(files[i].getFileType())) {
+      return i;
+    }
+  }
+  return -1;
+};
+
+const getNextItemOfType = (files, current_index, item_type_list) => {
+  for (let i = current_index + 1; i < files.length; i += 1) {
+    if (item_type_list.includes(files[i].getFileType())) {
+      return i;
+    }
+  }
+  return -1;
+};
 
 export class ViewAlbumPage extends Page {
   PAGE_MODE_DEFAULT = 0;
@@ -137,6 +159,7 @@ export class ViewAlbumPage extends Page {
         album: null,
         focus_item: null,
         edit_item: null,
+        edit_comment_item: null, // currently used only for keyboard event management
         move_items: [],
         selected_items: [],
         mode: this.PAGE_MODE_DEFAULT,
@@ -160,6 +183,7 @@ export class ViewAlbumPage extends Page {
         thumb_size: thumb_size_setting == null
           ? (platform.getRootWidth() >= 1440 ? this.THUMB_SIZE_11 : this.THUMB_SIZE_22)
           : thumb_size_setting,
+        keyboard_focus_item: null, // item currently selected for keyboard navigation
       };
 
       this.observer = new IntersectionObserver(this.fileObserverCallback, {});
@@ -933,24 +957,46 @@ export class ViewAlbumPage extends Page {
       const increment = is_left ? -1 : 1;
       let new_index = large_view_item_index + increment;
 
+      if (new_index < 0 || new_index > files.length - 1) {
+        return;
+      }
+
       let item = files[new_index];
       let item_file_type = item.getFileType();
 
       while (item_file_type !== STOCK_FILE_TYPE_IMAGE
         && item_file_type !== STOCK_FILE_TYPE_VIDEO
       ) {
-        if (new_index === 0 && increment === -1) {
-          const num_loaded_files = await this.loadAlbumNewerFiles();
-          new_index += num_loaded_files - 1;
+        if (increment === -1) {
+          if (new_index === 0) {
+            const num_loaded_files = await this.loadAlbumNewerFiles();
+            if (num_loaded_files === 0) {
+              return; // no more images
+            }
+            new_index += num_loaded_files - 1;
+          } else {
+            new_index -= 1;
+          }
         } else {
-          await this.loadAlbumOlderFiles();
+          const num_loaded_files = await this.loadAlbumOlderFiles();
+          if (num_loaded_files === 0 && new_index === files.length - 1) {
+            return; // no more images
+          }
           new_index += 1;
+        }
+
+        if (new_index < 0 || new_index > files.length - 1) {
+          return;
         }
 
         // eslint-disable-next-line prefer-destructuring
         files = this.state.files;
         item = files[new_index];
         item_file_type = item.getFileType();
+      }
+
+      if (new_index < 0 || new_index > files.length - 1) {
+        return;
       }
 
       if (item_file_type === STOCK_FILE_TYPE_IMAGE) {
@@ -1241,6 +1287,277 @@ export class ViewAlbumPage extends Page {
       return file_list.length;
     }
 
+    findLeftTopVisibleItem = (files) => {
+      for (
+        let i = getNextItemOfType(files, -1, [STOCK_FILE_TYPE_VIDEO, STOCK_FILE_TYPE_IMAGE]);
+        i !== -1;
+        i = getNextItemOfType(files, i, [STOCK_FILE_TYPE_VIDEO, STOCK_FILE_TYPE_IMAGE])
+      ) {
+        const item = files[i];
+        const el = document.getElementById(item.getFileIdentifier());
+        const rect = el.getBoundingClientRect();
+        if (rect.x >= 0 && rect.y >= 0) {
+          return files[i];
+        }
+      }
+      return null;
+    }
+
+    handleKeyDownPageModeDefault = (ev) => {
+      const vertical_lookup_length = 10;
+
+      const {
+        keyboard_focus_item,
+        files,
+        album,
+        edit_item,
+        edit_comment_item,
+        selected_items,
+      } = this.state;
+
+      switch (ev.key) {
+        case 'ArrowLeft':
+        case 'ArrowRight':
+        case 'ArrowUp':
+        case 'ArrowDown':
+        case 'Enter':
+          if (edit_item !== null || edit_comment_item !== null) {
+            return;
+          }
+          if (keyboard_focus_item === null) {
+            this.setState({ keyboard_focus_item: this.findLeftTopVisibleItem(files) });
+            ev.preventDefault();
+            return;
+          }
+          break;
+        case 'Escape':
+          if (selected_items.length > 0) {
+            this.setState({ selected_items: [] });
+            return;
+          }
+          if (keyboard_focus_item !== null) {
+            this.setState({ keyboard_focus_item: null });
+          }
+          if (edit_item !== null) {
+            this.setState({ edit_item: null });
+          }
+          return;
+        case 'Delete':
+        case 'Backspace':
+          if (edit_item !== null || edit_comment_item !== null) {
+            return;
+          }
+          break;
+        case ' ':
+          if (edit_item !== null || edit_comment_item !== null) {
+            return;
+          }
+          break;
+        default:
+          return;
+      }
+
+      ev.preventDefault();
+
+      let focused_index = files.indexOf(keyboard_focus_item);
+      const viewport_height = window.innerHeight;
+      let focused_item = null;
+
+      const shift = ev.shiftKey;
+
+      switch (ev.key) {
+        case 'ArrowLeft':
+          focused_index = getPrevItemOfType(
+            files, focused_index, [STOCK_FILE_TYPE_IMAGE, STOCK_FILE_TYPE_VIDEO],
+          );
+          if (focused_index !== -1) {
+            focused_item = files[focused_index];
+          }
+          break;
+        case 'ArrowRight':
+          focused_index = getNextItemOfType(
+            files, focused_index, [STOCK_FILE_TYPE_IMAGE, STOCK_FILE_TYPE_VIDEO],
+          );
+          if (focused_index !== -1) {
+            focused_item = files[focused_index];
+          }
+          break;
+        case 'ArrowUp':
+          {
+            const el = document.getElementById(keyboard_focus_item.getFileIdentifier());
+            const r = el.getBoundingClientRect();
+
+            let candidate_distance = 1000000;
+
+            for (let c = 0; c < vertical_lookup_length; c += 1) {
+              focused_index = getPrevItemOfType(
+                files, focused_index, [STOCK_FILE_TYPE_IMAGE, STOCK_FILE_TYPE_VIDEO],
+              );
+              if (focused_index < 0) {
+                break;
+              }
+              const new_el = document.getElementById(files[focused_index].getFileIdentifier());
+              const new_r = new_el.getBoundingClientRect();
+              if (
+                new_r.y < r.y
+                && (focused_item === null || candidate_distance > Math.abs(new_r.x - r.x))
+              ) {
+                focused_item = files[focused_index];
+                candidate_distance = Math.abs(new_r.x - r.x);
+              }
+            }
+          }
+          break;
+        case 'ArrowDown':
+          {
+            const el = document.getElementById(keyboard_focus_item.getFileIdentifier());
+            const r = el.getBoundingClientRect();
+
+            let candidate_distance = 1000000;
+
+            for (let c = 0; c < vertical_lookup_length; c += 1) {
+              focused_index = getNextItemOfType(
+                files, focused_index, [STOCK_FILE_TYPE_IMAGE, STOCK_FILE_TYPE_VIDEO],
+              );
+              if (focused_index < 0) {
+                break;
+              }
+              const new_el = document.getElementById(files[focused_index].getFileIdentifier());
+              const new_r = new_el.getBoundingClientRect();
+              if (
+                new_r.y > r.y
+                && (focused_item === null || candidate_distance > Math.abs(new_r.x - r.x))
+              ) {
+                focused_item = files[focused_index];
+                candidate_distance = Math.abs(new_r.x - r.x);
+              }
+            }
+          }
+          break;
+        case 'Enter':
+          this.gotoLargeView(album, keyboard_focus_item);
+          break;
+        case 'Backspace':
+        case 'Delete':
+          if (!selected_items.includes(keyboard_focus_item)) {
+            this.setState({ selected_items: [keyboard_focus_item] });
+          }
+          this.setState({ dialog: this.PAGE_DIALOG_CONFIRM_DELETE_SELECTION });
+          break;
+        case ' ':
+          if (selected_items.includes(keyboard_focus_item)) {
+            this.setState({
+              selected_items: selected_items.filter(item => item !== keyboard_focus_item),
+            });
+          } else {
+            this.setState({
+              selected_items: selected_items.concat([keyboard_focus_item]),
+            });
+          }
+          break;
+        default:
+          return;
+      }
+
+      // cannot find a new item to focus
+      if (focused_item === null) {
+        return;
+      }
+
+      if (shift && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(ev.key)) {
+        const new_selected_items = selected_items.map(item => item);
+
+        if (!new_selected_items.includes(keyboard_focus_item)) {
+          new_selected_items.push(keyboard_focus_item);
+        }
+        if (!new_selected_items.includes(focused_item)) {
+          new_selected_items.push(focused_item);
+        }
+
+        this.setState({ selected_items: new_selected_items });
+      }
+
+      this.setState({ keyboard_focus_item: focused_item });
+
+      const el = document.getElementById(focused_item.getFileIdentifier());
+      const r = el.getBoundingClientRect();
+
+      if (r.y < 0) {
+        el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        document.getElementsByClassName('main')[0].scrollBy(0, -r.height);
+      }
+
+      if (r.y + r.height > viewport_height) {
+        el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        document.getElementsByClassName('main')[0].scrollBy(0, r.height);
+      }
+    }
+
+    handleKeyDownPageModeLargeView = (ev) => {
+      const { history } = this.props;
+
+      switch (ev.key) {
+        case 'ArrowLeft':
+          this.handleLargeViewNavClick(true);
+          break;
+        case 'ArrowRight':
+        case ' ':
+          this.handleLargeViewNavClick(false);
+          break;
+        case 'Escape':
+          this.setState({ keyboard_focus_item: null });
+          history.goBack();
+          break;
+        default:
+          break;
+      }
+    }
+
+    handleKeyDownDialogConfirmDelete = (ev) => {
+      switch (ev.key) {
+        case 'Escape':
+          {
+            const { selected_items } = this.state;
+            if (selected_items.length === 1) {
+              this.setState({ dialog: this.PAGE_DIALOG_NONE, selected_items: [] });
+            } else {
+              this.setState({ dialog: this.PAGE_DIALOG_NONE });
+            }
+          }
+          break;
+        default:
+          break;
+      }
+      // the default broeser handler will take care of buttons (tab, shift-tab, enter)
+    }
+
+    handleKeyDown = (ev) => {
+      if (ev.defaultPrevented) {
+        return;
+      }
+
+      const { dialog, mode } = this.state;
+
+      switch (dialog) {
+        case this.PAGE_DIALOG_CONFIRM_DELETE_SELECTION:
+          this.handleKeyDownDialogConfirmDelete(ev);
+          return;
+        default:
+          break;
+      }
+
+      switch (mode) {
+        case this.PAGE_MODE_DEFAULT:
+          this.handleKeyDownPageModeDefault(ev);
+          break;
+        case this.PAGE_MODE_LARGE_VIEW:
+          this.handleKeyDownPageModeLargeView(ev);
+          break;
+        default:
+          break;
+      }
+    }
+
     componentDidUpdate = (prevProps) => {
       const {
         user,
@@ -1338,6 +1655,8 @@ export class ViewAlbumPage extends Page {
     }
 
     componentDidMount() {
+      window.addEventListener('keydown', this.handleKeyDown);
+
       if (this.props.user.getAuth()) {
         const { user, match, app } = this.props;
 
@@ -1372,6 +1691,7 @@ export class ViewAlbumPage extends Page {
 
     componentWillUnmount() {
       this.observer.disconnect();
+      window.removeEventListener('keydown', this.handleKeyDown);
     }
 
     imageThumbRefCallback = (ref, f) => {
@@ -1398,7 +1718,8 @@ export class ViewAlbumPage extends Page {
         move_items,
         selected_items,
         album,
-        thumb_size
+        thumb_size,
+        keyboard_focus_item,
       } = this.state;
 
       const { history } = this.props;
@@ -1416,7 +1737,8 @@ export class ViewAlbumPage extends Page {
 
       // eslint-disable-next-line no-param-reassign
       for (; index < files.length && isSameDay(files[index].getDate(), date); index += 1) {
-        let left_pad; let right_pad;
+        let left_pad;
+        let right_pad;
 
         const item = files[index];
         file_list_for_date.push(item);
@@ -1467,6 +1789,7 @@ export class ViewAlbumPage extends Page {
               downloading={this.isFileDownloaded(item)}
               playing={this.isFilePlayed(item)}
               moving={move_items.includes(item)}
+              keyboard_focus={keyboard_focus_item === files[index]}
             />);
             break;
           case STOCK_FILE_TYPE_TEXT:
@@ -1583,33 +1906,16 @@ export class ViewAlbumPage extends Page {
         );
       } else if (dialog === this.PAGE_DIALOG_CONFIRM_DELETE_SELECTION) {
         return (
-          <>
-            <div className="view-album-selection-dialog">
-              <div>
-                <div className="view-album-selection-dialog-title">
-                  DELETE {selected_items.length} SELECTED ITEMS?
-                </div>
-                <div className="view-album-selection-dialog-text">
-                  THIS CANNOT BE UNDONE
-                </div>
-                <div className="view-album-selection-dialog-buttons">
-                  <c.DangerButtonSm
-                    title="DELETE"
-                    onClick={() => {
-                      this.setState({ dialog: this.PAGE_DIALOG_NONE });
-                      this.handleDeleteSelectedItems();
-                    }}
-                  />
-                  <c.WhiteButtonSm
-                    title="CANCEL"
-                    onClick={() => {
-                      this.setState({ dialog: this.PAGE_DIALOG_NONE });
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </>
+          <ConfirmDeleteSelectionDialog
+            {...{ selected_items }}
+            onDelete={() => {
+              this.setState({ dialog: this.PAGE_DIALOG_NONE, keyboard_focus_item: null });
+              this.handleDeleteSelectedItems();
+            }}
+            onClose={() => {
+              this.setState({ dialog: this.PAGE_DIALOG_NONE });
+            }}
+          />
         );
       }
       return <></>;
@@ -1932,8 +2238,6 @@ export class ViewAlbumPage extends Page {
       } = this.state;
 
       const show_side_menu = app.getShowSideMenu();
-      // const main_panel_class =
-      //    show_side_menu ? "main-panel-with-menu" : "main-panel-centered";
       const main_panel_class = 'main-panel-centered';
 
       if (mode !== this.PAGE_MODE_FREE_ACCOUNT_NO_ALBUMS
@@ -1947,7 +2251,10 @@ export class ViewAlbumPage extends Page {
         tools = (
           <c.MenuButton
             title="Back"
-            onClick={history.goBack}
+            onClick={() => {
+              this.setState({ keyboard_focus_item: null });
+              history.goBack();
+            }}
             icon={<icon.Grid3x2Gap width="1.75rem" height="1.75rem" />}
           />
         );

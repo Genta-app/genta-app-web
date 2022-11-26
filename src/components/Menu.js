@@ -310,6 +310,13 @@ export const SideMenu = ({
             title="ACCOUNT"
             icon={<icon.IconPersonCircle />}
           />
+          <SideMenuLink
+            active={active === 'doc'}
+            to="/doc"
+            title="DOCUMENTATION"
+            icon={<icon.IconQuestionDiamond width="28" height="28" />}
+          />
+
           {/* <SideMenuLink active={active == "subscription"}
                     to="/sub" title="SUBSCRIPTION" icon=<icon.IconCreditCard /> /> */}
           <div className="left-panel-line" />
