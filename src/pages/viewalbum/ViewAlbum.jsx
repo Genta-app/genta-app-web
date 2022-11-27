@@ -1495,6 +1495,7 @@ export class ViewAlbumPage extends Page {
 
   handleKeyDownPageModeLargeView = (ev) => {
     const { history } = this.props;
+    const { files, keyboard_focus_item, large_view_item_index } = this.state;
 
     switch (ev.key) {
       case 'ArrowLeft':
@@ -1505,7 +1506,9 @@ export class ViewAlbumPage extends Page {
         this.handleLargeViewNavClick(false);
         break;
       case 'Escape':
-        this.setState({ keyboard_focus_item: null });
+        if (keyboard_focus_item !== null) {
+          this.setState({ keyboard_focus_item: files[large_view_item_index] });
+        }
         history.goBack();
         break;
       default:
