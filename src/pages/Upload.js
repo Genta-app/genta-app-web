@@ -49,6 +49,7 @@ import {
   formatDate,
   daysInMonth,
   formatHumanFriendlyDate,
+  parseYMD,
 } from '../library/Format';
 
 import * as api from '../library/Api';
@@ -60,6 +61,8 @@ const FILE_STATUS_QUEUED = 1;
 const FILE_STATUS_UPLOADING = 2;
 const FILE_STATUS_SUCCESS = 3;
 const FILE_STATUS_ERROR = 4;
+
+const filename_date_re = /([0-9]{8})_[0-9]{6}\.[0-9a-zA-Z]+/;
 
 async function renderElementToBuffer(el, width, height) {
   const canvas = document.createElement('canvas');
@@ -306,9 +309,9 @@ export class UploadPageComponent extends React.Component {
                   + moov_box[13] * 256 * 256
                   + moov_box[14] * 256 + moov_box[15]);
                 if (full_box_version === 0) {
-                  // if seconds === 0, assume the date was not set and set current date
+                  // if seconds === 0, assume the date was not set and try a different way below
                   if (seconds === 0) {
-                    file_date = new Date();
+                    file_date = null;
                   } else {
                     file_date = new Date(base_date.getTime() + seconds * 1000);
                   }
@@ -323,9 +326,24 @@ export class UploadPageComponent extends React.Component {
         file_data.upload_date = file_date;
       } catch (e) {
         console.error(e);
-        file_data.upload_date = new Date();
       }
     }
+
+    if (file_date === null) {
+      try {
+        const m = file_obj.name.match(filename_date_re);
+        if (m !== null && m.length === 2) {
+          file_date = parseYMD(Number(m[1]));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    if (file_date === null) {
+      file_date = new Date();
+    }
+
 
     const video = document.createElement('video');
     video.crossorigin = 'anonymous';
@@ -462,8 +480,22 @@ export class UploadPageComponent extends React.Component {
         file_data.upload_date = file_date;
       } catch (e) {
         console.error(e);
-        file_date = new Date();
       }
+    }
+
+    if (file_date === null) {
+      try {
+        const m = file_obj.name.match(filename_date_re);
+        if (m !== null && m.length === 2) {
+          file_date = parseYMD(Number(m[1]));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    if (file_date === null) {
+      file_date = new Date();
     }
 
     const file_key = encrypted ? crypto.symmetricGenerateKey() : null;
@@ -944,7 +976,7 @@ export class UploadPageComponent extends React.Component {
                     })}
                     checked={autodetect_file_date}
                   >
-                    Autodetect date from file metadata
+                    Autodetect date
                   </c.Checkbox>
                 </div>
 
