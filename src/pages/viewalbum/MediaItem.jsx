@@ -1,4 +1,7 @@
+/* eslint-disable jsx-a11y/media-has-caption */
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 //
 // Copyright (c) 2022 Digital Five Pty Ltd
 //
@@ -21,44 +24,188 @@
 /* eslint-disable lines-between-class-members */
 
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
-import * as api from '../library/Api';
+import {
+  loadAndDecryptFile,
+  loadAndDecryptMainImage,
+  uploadImageFile,
+  MEDIA_TYPE_IMAGE,
+  STOCK_FILE_TYPE_VIDEO,
+} from '../../library/File';
 
-import { loadAndDecryptMainImage, uploadImageFile, MEDIA_TYPE_IMAGE } from '../library/File';
+import * as icon from '../../components/Icons';
+import * as platform from '../../library/Platform';
+import * as c from '../../components/Controls';
 
-import * as icon from '../components/Icons';
-import * as c from '../components/Controls';
+import { LoadingScreen } from '../../components/WaitForValidUser';
+import { If, useRefState, Select } from '../../components/JSXFlow';
+import { canvasToBlob } from '../../library/Utils';
 
-import { LoadingScreen } from '../components/WaitForValidUser';
-import { PageContentWrapper } from './PageContentWrapper';
-import { useRefState, Select } from '../components/JSXFlow';
-import { canvasToBlob } from '../library/Utils';
-import { dateToYYYYMMDD } from '../library/Format';
+export const ViewMediaItem = ({ page }) => {
+  const {
+    files,
+    large_view_item_index,
+    large_view_menu_mode,
+    large_view_video_show_wait_message,
+    large_view_show_nav_buttons,
+  } = page.state;
 
-// const Dialog = ({ title, exitPath }) => {
-//   const history = useHistory();
+  if (files.length === 0) {
+    return <></>;
+  }
 
-//   return (
-//     <div className="main-form">
-//       <div className="form-title">{title}</div>
-//       <c.WhiteButton
-//         onClick={() => history.push(exitPath)}
-//         title="OK"
-//       />
-//     </div>
-//   );
-// };
+  const item = files[large_view_item_index];
+  const is_video = item.getFileType() === STOCK_FILE_TYPE_VIDEO;
+  const video_stream_url = item.getVideoStreamURL();
+
+  const img_src = item.getImageDataURL() ? item.getImageDataURL() : item.getThumbDataURL();
+
+  // dim the comment when the menu is visible
+  const comment_style = (
+    large_view_menu_mode === page.LARGE_VIEW_MENU_SHOW
+      ? { color: '#888', }
+      : { cursor: 'pointer' }
+  );
+
+  const hover = platform.isHoverAvailable();
+
+  return (
+    <div
+      className="view-large-main"
+      onMouseMove={(hover && page.handleLargeViewMouseActivity) || undefined}
+      onClick={(hover && page.handleLargeViewMouseActivity) || undefined}
+      onContextMenu={(hover && page.handleLargeViewMouseActivity) || undefined}
+    >
+      {large_view_show_nav_buttons && (
+        <div
+          className="view-large-left-arrow"
+        >
+          <c.MenuButton
+            onClick={() => page.handleLargeViewNavClick(true)}
+            title="Later"
+            icon={<icon.SquareLeftArrow width="2rem" height="2rem" />}
+          />
+        </div>
+      )}
+      { large_view_show_nav_buttons && (
+        <div className="view-large-right-arrow">
+          <c.MenuButton
+            title="Earlier"
+            onClick={() => page.handleLargeViewNavClick(false)}
+            icon={<icon.SquareRightArrow width="2rem" height="2rem" />}
+          />
+        </div>
+      )}
+      <div className="view-large-image-container">
+        {!is_video && item.getImageDataURL() == null && (
+          <div className="view-large-image-loading">
+            Loading Hi-Res...
+          </div>
+        )}
+        {!is_video && (
+          <img
+            // eslint-disable-next-line prefer-destructuring, no-param-reassign
+            onTouchStart={(ev) => { page.touch_start_ev = ev.touches[0]; }}
+            // eslint-disable-next-line prefer-destructuring, no-param-reassign
+            onTouchMove={(ev) => { page.touch_move_ev = ev.touches[0]; }}
+            onTouchEnd={ev => page.handleTouchEnd(ev)}
+            src={img_src}
+            className="view-large-image"
+          />
+        )}
+        {is_video && (
+          <video
+            // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-preload
+            preload="none"
+            // eslint-disable-next-line prefer-destructuring, no-param-reassign
+            onTouchStart={(ev) => { page.touch_start_ev = ev.touches[0]; }}
+            // eslint-disable-next-line prefer-destructuring, no-param-reassign
+            onTouchMove={(ev) => { page.touch_move_ev = ev.touches[0]; }}
+            onTouchEnd={ev => page.handleTouchEnd(ev)}
+            onPlay={() => page.setState({ large_view_video_show_wait_message: false })}
+            src={video_stream_url}
+            controls
+            // doesn't work
+            controlsList="nodownload"
+            // suppress menu to disable "save as" which doesn't work
+            onContextMenu={ev => ev.preventDefault()}
+            autoPlay
+            className="view-large-image"
+          />
+        )}
+
+        {is_video && large_view_video_show_wait_message && (
+          <div
+            className="view-large-image"
+            style={{
+              textAlign: 'center',
+              fontSize: '1.25rem',
+              position: 'absolute',
+              top: 'calc(50% - 2rem)',
+            }}
+          >
+            Loading video can take time. Please wait...
+          </div>
+        )}
+        {large_view_menu_mode === page.LARGE_VIEW_EDIT_IMAGE_COMMENT && (
+          <c.LargeViewEditComment
+            onSave={async (text) => {
+              await page.handleSaveImageComment(item, text);
+              page.setState({ large_view_menu_mode: page.LARGE_VIEW_MENU_HIDDEN });
+            }}
+            onCancel={
+              () => page.setState({ large_view_menu_mode: page.LARGE_VIEW_MENU_HIDDEN })
+            }
+            value={item.getComment()}
+          />
+        )}
+        {large_view_menu_mode !== page.LARGE_VIEW_EDIT_IMAGE_COMMENT && (
+          <div
+            style={comment_style}
+            onClick={
+              () => page.setState({ large_view_menu_mode: page.LARGE_VIEW_EDIT_IMAGE_COMMENT })
+            }
+            className="view-large-image-comment"
+          >
+            {item.getComment()}
+          </div>
+        )}
+      </div>
+      {page.renderLargeViewMenu(item)}
+    </div>
+  );
+};
 
 const OP_STATUS_EDIT = 0;
 const OP_STATUS_SAVE_INPROGRESS = 1;
 const OP_STATUS_SAVE_SUCCESS = 2;
 const OP_STATUS_SAVE_ERROR = 3;
 
-export const EditPage = (props) => {
-  const { app, user, albums } = props;
+const StatusAlert = ({ status, resetStatus }) => (
+  <Select option={status}>
+    <>
+      {/* show no alert by default */}
+    </>
+    <>
+      {/* show no alert when save in progress */}
+    </>
+    <c.Alert
+      icon={<icon.IconInfoCircle />}
+      text="Changes saved"
+      onClick={resetStatus}
+    />
+    <c.Alert
+      icon={<icon.IconExclCircle />}
+      text="Save failed. Please try later"
+      onClick={resetStatus}
+    />
+  </Select>
+);
 
-  const { item_ident } = useParams();
+export const EditMediaItem = (props) => {
+  const { page } = props;
+
   const history = useHistory();
 
   const [loaded, setLoaded] = useState(false);
@@ -87,19 +234,32 @@ export const EditPage = (props) => {
   const [canvas_inited, setCanvasInited] = useState(false);
 
   const loadItem = async () => {
-    if (!loaded && albums !== null && albums.length > 0) {
+    if (!loaded) {
       setLoaded(true);
       setCropX(0);
       setCropY(0);
 
-      const [file_list, album_list] = await api.apiGetFile(item_ident, albums);
-      if (file_list !== null && file_list.length > 0) {
-        setItem(file_list[0]);
-        setAlbum(album_list[0]);
-        await loadAndDecryptMainImage(app, album_list[0], file_list[0]);
-        setDataLoaded(true);
-        setCanvasInited(false);
+      const { files, large_view_item_index } = page.state;
+      const { app } = page.props;
+      const f = files[large_view_item_index];
+
+      setItem(f);
+      setAlbum(page.state.album);
+
+      const data_load_promises = [];
+
+      if (f.getThumbDataURL() === null) {
+        data_load_promises.push(loadAndDecryptFile(app, page.state.album, f));
       }
+
+      if (f.getImageDataURL() === null) {
+        data_load_promises.push(loadAndDecryptMainImage(app, page.state.album, f));
+      }
+
+      await Promise.all(data_load_promises);
+
+      setDataLoaded(true);
+      setCanvasInited(false);
     }
   };
 
@@ -338,6 +498,8 @@ export const EditPage = (props) => {
   const handleSave = async () => {
     setOperationStatus(OP_STATUS_SAVE_INPROGRESS);
 
+    const { app, user } = page.props;
+
     // const system_space_promise = (
     //   isAlbumInSystemBucket(album, buckets) ? api.apiSystemSpace() : null
     // );
@@ -399,7 +561,12 @@ export const EditPage = (props) => {
     // }
 
     try {
-      const { file_identifier, status } = await uploadImageFile(
+      const {
+        file_identifier,
+        file_bucket_path,
+        thumb_bucket_path,
+        status,
+      } = await uploadImageFile(
         app, user, album, item.getName(), item.getFileType(), item.getFileKey(), image_buffer,
         thumb_buffer, item.getDate(), orientation, MEDIA_TYPE_IMAGE /* image only for now */,
         1 /* encrypted */, item.getOrdering(),
@@ -407,6 +574,10 @@ export const EditPage = (props) => {
       );
 
       if (file_identifier != null && status === 200) {
+        item.setBucketPath(file_bucket_path);
+        item.setThumbBucketPath(thumb_bucket_path);
+        item.setThumbDataURL(null);
+        item.setImageDataURL(null);
         setOperationStatus(OP_STATUS_SAVE_SUCCESS);
         setLoaded(false);
         setDataLoaded(false);
@@ -431,97 +602,93 @@ export const EditPage = (props) => {
     setTimeout(() => setOperationStatus(OP_STATUS_EDIT), 3000);
   };
 
-  const handleViewInAlbum = () => {
-    history.push(`/view/${album.getAlbumIdentifier()}/${dateToYYYYMMDD(item.getDate())}`);
+  const handleCancelCrop = () => {
+    setCropX(0);
+    setCropY(0);
+    setCropWidth(crop_out_img_ref.current.width);
+    setCropHeight(crop_out_img_ref.current.height);
+
+    crop_canvas_ref.current.style.transform = '';
+    crop_box_ref.current.style.transform = '';
+    crop_box_ref.current.style.width = `${crop_out_img_ref.current.width}px`;
+    crop_box_ref.current.style.height = `${crop_out_img_ref.current.height}px`;
   };
 
   const [w_ratio, h_ratio] = getRatios();
 
   return (
-    <Select option={data_loaded ? 0 : 1}>
-      <PageContentWrapper {...props}>
-        <Select option={operation_status}>
-          <>
-            {/* show no alert by default */}
-          </>
-          <>
-            {/* show no alert when save in progress */}
-          </>
-          <c.Alert
-            icon={<icon.IconInfoCircle />}
-            text="Changes saved"
-            onClick={() => setOperationStatus(OP_STATUS_EDIT)}
-          />
-          <c.Alert
-            icon={<icon.IconExclCircle />}
-            text="Save failed. Please try later"
-            onClick={() => setOperationStatus(OP_STATUS_EDIT)}
-          />
-        </Select>
-
-        <div className="edit-image-crop-info">
-          {crop_x_ref.current}&nbsp;{crop_y_ref.current}&nbsp;&nbsp;&nbsp;
-          {`${Math.round(crop_width_ref.current * w_ratio)}x${Math.round(crop_height_ref.current * h_ratio)}`}
-        </div>
-        <div className="edit-image-main">
-          <div className="edit-image-container" ref={ref => setContainerRef(ref)}>
-            <img
-              draggable="false"
-              alt=""
-              className="edit-image-cropout"
-              ref={ref => setCropOutImgRef(ref)}
-            />
-            <div
-              className="edit-image-crop-box"
-              ref={ref => setCropBoxRef(ref)}
-            >
+    <>
+      <StatusAlert
+        status={operation_status}
+        resetStatus={() => setOperationStatus(OP_STATUS_EDIT)}
+      />
+      <Select option={data_loaded ? 0 : 1}>
+        <>
+          <div className="edit-image-crop-info">
+            {crop_x_ref.current}&nbsp;{crop_y_ref.current}&nbsp;&nbsp;&nbsp;
+            {`${Math.round(crop_width_ref.current * w_ratio)}x${Math.round(crop_height_ref.current * h_ratio)}`}
+          </div>
+          <div className="edit-image-main">
+            <div className="edit-image-container" ref={ref => setContainerRef(ref)}>
+              <img
+                draggable="false"
+                alt=""
+                className="edit-image-cropout"
+                ref={ref => setCropOutImgRef(ref)}
+              />
               <div
-                className="edit-image-clipper-box"
+                className="edit-image-crop-box"
                 ref={ref => setCropBoxRef(ref)}
-                onPointerDown={grabClipBox}
               >
-                <canvas
-                  draggable="false"
-                  className="edit-image-cropin"
-                  ref={ref => setCropCanvasRef(ref)}
+                <div
+                  className="edit-image-clipper-box"
+                  onPointerDown={grabClipBox}
+                >
+                  <canvas
+                    draggable="false"
+                    className="edit-image-cropin"
+                    ref={ref => setCropCanvasRef(ref)}
+                  />
+                </div>
+                <div
+                  className="edit-image-crop-top-handle"
+                  onPointerDown={grabTopHandle}
+                />
+                <div
+                  className="edit-image-crop-bottom-handle"
+                  onPointerDown={grabBottomHandle}
+                />
+                <div
+                  className="edit-image-crop-left-handle"
+                  onPointerDown={grabLeftHandle}
+                />
+                <div
+                  className="edit-image-crop-right-handle"
+                  onPointerDown={grabRightHandle}
                 />
               </div>
-              <div
-                className="edit-image-crop-top-handle"
-                onPointerDown={grabTopHandle}
-              />
-              <div
-                className="edit-image-crop-bottom-handle"
-                onPointerDown={grabBottomHandle}
-              />
-              <div
-                className="edit-image-crop-left-handle"
-                onPointerDown={grabLeftHandle}
-              />
-              <div
-                className="edit-image-crop-right-handle"
-                onPointerDown={grabRightHandle}
-              />
-            </div>
-            <div className="edit-image-controls" ref={ref => setControlsRef(ref)}>
-              <c.SuperWhiteButton
-                title={operation_status === OP_STATUS_SAVE_INPROGRESS ? 'PLEASE WAIT...' : 'SAVE CHANGES'}
-                onClick={handleSave}
-                disabled={!hasChanges() || operation_status === OP_STATUS_SAVE_INPROGRESS}
-              />
-              <c.WhiteButton
-                title="VIEW IN ALBUM"
-                onClick={handleViewInAlbum}
-                disabled={operation_status === OP_STATUS_SAVE_INPROGRESS}
-              />
+              <div className="edit-image-controls" ref={ref => setControlsRef(ref)}>
+                <c.SuperWhiteButton
+                  title={operation_status === OP_STATUS_SAVE_INPROGRESS ? 'PLEASE WAIT...' : 'SAVE CHANGES'}
+                  onClick={handleSave}
+                  disabled={!hasChanges() || operation_status === OP_STATUS_SAVE_INPROGRESS}
+                />
+                <If condition={hasChanges()}>
+                  <c.WhiteButton
+                    title="CANCEL"
+                    onClick={handleCancelCrop}
+                    disabled={operation_status === OP_STATUS_SAVE_INPROGRESS}
+                  />
+                </If>
+              </div>
             </div>
           </div>
+        </>
+        <div>
+          <LoadingScreen />
         </div>
-      </PageContentWrapper>
-      <div>
-        <LoadingScreen />
-      </div>
-    </Select>
+      </Select>
+    </>
 
   );
 };

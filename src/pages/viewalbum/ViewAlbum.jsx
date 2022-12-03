@@ -38,14 +38,17 @@
 import React from 'react';
 
 import { LoadingScreen } from '../../components/WaitForValidUser';
-import { Page } from '../Page';
+import { ViewMediaItem, EditMediaItem } from './MediaItem';
 import { ImageThumbItem } from './ImageThumbItem';
+
+import { Page } from '../Page';
 import { TextItem } from './TextItem';
 import { DateHeader, getDateHeaderId } from './DateHeader';
-import * as streamutils from '../../library/StreamUtils';
 import { TopBar, SideMenu } from '../../components/Menu';
-import * as icon from '../../components/Icons';
+import { If } from '../../components/JSXFlow';
 
+import * as icon from '../../components/Icons';
+import * as streamutils from '../../library/StreamUtils';
 import * as platform from '../../library/Platform';
 import * as settings from '../../library/Settings.ts';
 
@@ -130,6 +133,7 @@ export class ViewAlbumPage extends Page {
   PAGE_MODE_ACCEPT_SHARED_ALBUM = 2;
   PAGE_MODE_ERROR_NO_SERVICE_WORKER = 3;
   PAGE_MODE_FREE_ACCOUNT_NO_ALBUMS = 4;
+  PAGE_MODE_EDIT_ITEM = 5;
 
   PAGE_DIALOG_NONE = 0;
   PAGE_DIALOG_CONFIRM_DELETE_SELECTION = 1;
@@ -409,6 +413,18 @@ export class ViewAlbumPage extends Page {
     });
 
     this.props.history.push(`/zoom/${album.getAlbumIdentifier()}`);
+  }
+
+  gotoEditItem = async (item) => {
+    const { files, album } = this.state;
+
+    await this.setStatePromise({
+      mode: this.PAGE_MODE_EDIT_ITEM,
+      large_view_item_index: files.indexOf(item),
+      large_view_main_image_avail: item.getImageDataURL() != null,
+    });
+
+    this.props.history.push(`/edit/${album.getAlbumIdentifier()}`);
   }
 
   async handleStartLargeView(item) {
@@ -1330,6 +1346,11 @@ export class ViewAlbumPage extends Page {
           return;
         }
         break;
+      case 'e':
+        if (edit_item !== null || edit_comment_item !== null) {
+          return;
+        }
+        break;
       case 'Escape':
         if (selected_items.length > 0) {
           this.setState({ selected_items: [] });
@@ -1437,6 +1458,9 @@ export class ViewAlbumPage extends Page {
       case 'Enter':
         this.gotoLargeView(album, keyboard_focus_item);
         break;
+      case 'e':
+        this.gotoEditItem(keyboard_focus_item);
+        break;
       case 'Backspace':
       case 'Delete':
         if (!selected_items.includes(keyboard_focus_item)) {
@@ -1505,6 +1529,25 @@ export class ViewAlbumPage extends Page {
       case ' ':
         this.handleLargeViewNavClick(false);
         break;
+      case 'e':
+        this.gotoEditItem(files[large_view_item_index]);
+        break;
+      case 'Escape':
+        if (keyboard_focus_item !== null) {
+          this.setState({ keyboard_focus_item: files[large_view_item_index] });
+        }
+        history.goBack();
+        break;
+      default:
+        break;
+    }
+  }
+
+  handleKeyDownPageModeEditItem = (ev) => {
+    const { history } = this.props;
+    const { files, keyboard_focus_item, large_view_item_index } = this.state;
+
+    switch (ev.key) {
       case 'Escape':
         if (keyboard_focus_item !== null) {
           this.setState({ keyboard_focus_item: files[large_view_item_index] });
@@ -1556,6 +1599,9 @@ export class ViewAlbumPage extends Page {
       case this.PAGE_MODE_LARGE_VIEW:
         this.handleKeyDownPageModeLargeView(ev);
         break;
+      case this.PAGE_MODE_EDIT_ITEM:
+        this.handleKeyDownPageModeEditItem(ev);
+        break;
       default:
         break;
     }
@@ -1593,12 +1639,18 @@ export class ViewAlbumPage extends Page {
       }
 
       if (prevProps.match.path.startsWith('/view')
+        || prevProps.match.path.startsWith('/edit')
         || prevProps.match.params.file_ident !== match.params.file_ident
       ) {
         this.handleStartLargeView(files[large_view_item_index]);
       }
+    } else if (match.path.startsWith('/edit/')) {
+      if (!files || files.length === 0) {
+        history.push(`/view/${album_ident}`);
+        return;
+      }
     } else if (match.path.startsWith('/view')
-      && prevProps.match.path.startsWith('/zoom/')
+      && (prevProps.match.path.startsWith('/zoom/') || prevProps.match.path.startsWith('/edit/'))
       && files && files.length > 0
     ) {
       this.handleLargeViewContract();
@@ -2054,138 +2106,6 @@ export class ViewAlbumPage extends Page {
     return <></>;
   }
 
-  renderLargeView() {
-    const {
-      files,
-      large_view_item_index,
-      large_view_menu_mode,
-      large_view_video_show_wait_message,
-      large_view_show_nav_buttons,
-    } = this.state;
-
-    if (files.length === 0) {
-      return <></>;
-    }
-
-    const item = files[large_view_item_index];
-    const is_video = item.getFileType() === STOCK_FILE_TYPE_VIDEO;
-    const video_stream_url = item.getVideoStreamURL();
-
-    const img_src = item.getImageDataURL() ? item.getImageDataURL() : item.getThumbDataURL();
-
-    // dim the comment when the menu is visible
-    const comment_style = (
-      large_view_menu_mode === this.LARGE_VIEW_MENU_SHOW
-        ? { color: '#888', }
-        : { cursor: 'pointer' }
-    );
-
-    return (
-      <div
-        className="view-large-main"
-        onMouseMove={
-          platform.isHoverAvailable() && this.handleLargeViewMouseActivity || undefined}
-        onClick={platform.isHoverAvailable() && this.handleLargeViewMouseActivity || undefined}
-        onContextMenu={
-          platform.isHoverAvailable() && this.handleLargeViewMouseActivity || undefined}
-      >
-        {large_view_show_nav_buttons && (
-          <div
-            className="view-large-left-arrow"
-          >
-            <c.MenuButton
-              onClick={() => this.handleLargeViewNavClick(true)}
-              title="Later"
-              icon={<icon.SquareLeftArrow width="2rem" height="2rem" />}
-            />
-          </div>
-        )}
-        { large_view_show_nav_buttons && (
-          <div className="view-large-right-arrow">
-            <c.MenuButton
-              title="Earlier"
-              onClick={() => this.handleLargeViewNavClick(false)}
-              icon={<icon.SquareRightArrow width="2rem" height="2rem" />}
-            />
-          </div>
-        )}
-        <div className="view-large-image-container">
-          {!is_video && item.getImageDataURL() == null && (
-            <div className="view-large-image-loading">
-              Loading Hi-Res...
-            </div>
-          )}
-          {!is_video && (
-            <img
-              // eslint-disable-next-line prefer-destructuring
-              onTouchStart={(ev) => { this.touch_start_ev = ev.touches[0]; }}
-              onTouchMove={(ev) => { this.touch_move_ev = ev.touches[0]; }}
-              onTouchEnd={ev => this.handleTouchEnd(ev)}
-              src={img_src}
-              className="view-large-image"
-            />
-          )}
-          {is_video && (
-            <video
-              // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-preload
-              preload="none"
-              onTouchStart={(ev) => { this.touch_start_ev = ev.touches[0]; }}
-              onTouchMove={(ev) => { this.touch_move_ev = ev.touches[0]; }}
-              onTouchEnd={ev => this.handleTouchEnd(ev)}
-              onPlay={() => this.setState({ large_view_video_show_wait_message: false })}
-              src={video_stream_url}
-              controls
-              // doesn't work
-              controlsList="nodownload"
-              // suppress menu to disable "save as" which doesn't work
-              onContextMenu={ev => ev.preventDefault()}
-              autoPlay
-              className="view-large-image"
-            />
-          )}
-
-          {is_video && large_view_video_show_wait_message && (
-            <div
-              className="view-large-image"
-              style={{
-                textAlign: 'center',
-                fontSize: '1.25rem',
-                position: 'absolute',
-                top: 'calc(50% - 2rem)',
-              }}
-            >
-              Loading video can take time. Please wait...
-            </div>
-          )}
-          {large_view_menu_mode === this.LARGE_VIEW_EDIT_IMAGE_COMMENT && (
-            <c.LargeViewEditComment
-              onSave={async (text) => {
-                await this.handleSaveImageComment(item, text);
-                this.setState({ large_view_menu_mode: this.LARGE_VIEW_MENU_HIDDEN });
-              }}
-              onCancel={
-                () => this.setState({ large_view_menu_mode: this.LARGE_VIEW_MENU_HIDDEN })
-              }
-              value={item.getComment()}
-            />
-          )}
-          {large_view_menu_mode !== this.LARGE_VIEW_EDIT_IMAGE_COMMENT && (
-            <div
-              style={comment_style}
-              onClick={
-                () => this.setState({ large_view_menu_mode: this.LARGE_VIEW_EDIT_IMAGE_COMMENT })
-              }
-              className="view-large-image-comment"
-            >
-              {item.getComment()}
-            </div>
-          )}
-        </div>
-        {this.renderLargeViewMenu(item)}
-      </div>
-    );
-  }
-
   renderAcceptAlbumView() {
     const {
       album,
@@ -2255,7 +2175,7 @@ export class ViewAlbumPage extends Page {
     }
 
     let tools;
-    if (mode === this.PAGE_MODE_LARGE_VIEW) {
+    if (mode === this.PAGE_MODE_LARGE_VIEW || mode === this.PAGE_MODE_EDIT_ITEM) {
       tools = (
         <c.MenuButton
           title="Back"
@@ -2263,7 +2183,7 @@ export class ViewAlbumPage extends Page {
             this.setState({ keyboard_focus_item: null });
             history.goBack();
           }}
-          icon={<icon.Grid3x2Gap width="1.75rem" height="1.75rem" />}
+          icon={<icon.UTurnArrow width="1.75rem" height="1.75rem" />}
         />
       );
     }
@@ -2315,7 +2235,13 @@ export class ViewAlbumPage extends Page {
 
           {mode === this.PAGE_MODE_ACCEPT_SHARED_ALBUM && this.renderAcceptAlbumView()}
 
-          {mode === this.PAGE_MODE_LARGE_VIEW && this.renderLargeView()}
+          <If condition={mode === this.PAGE_MODE_LARGE_VIEW}>
+            <ViewMediaItem page={this} />
+          </If>
+
+          <If condition={mode === this.PAGE_MODE_EDIT_ITEM}>
+            <EditMediaItem page={this} />
+          </If>
 
           {mode === this.PAGE_MODE_DEFAULT && files.length === 0 && (
             <div className={main_panel_class}>

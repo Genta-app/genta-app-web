@@ -28,7 +28,7 @@ export const TOCPage = () => (
       Detailed guide on how to attach a <b>Backblaze B2</b> storage to your <b>Genta.app</b> account
     </div>
 
-    <h2><Link to="/doc/keyboard">Keyboard for Power Users</Link></h2>
+    <h2><Link to="/doc/keyboard">Keyboard Shortcuts</Link></h2>
 
     <div className="doc-para">
       Keyboard shortcuts reference

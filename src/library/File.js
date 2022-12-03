@@ -491,7 +491,12 @@ export async function uploadImageFile(
     return { file_identifier: null, status: xhr_file.status };
   }
 
-  return { file_identifier: unpackValue(xhr_file.response).file.identifier, status: 200 };
+  return {
+    file_identifier: unpackValue(xhr_file.response).file.identifier,
+    file_bucket_path,
+    thumb_bucket_path,
+    status: 200,
+  };
 }
 
 export async function uploadLargeFile(app, user, album, file_key, file_identifier, file,
@@ -1037,8 +1042,18 @@ export class StockFile {
     return this.file_bucket_path;
   }
 
+  // used when updating the file
+  setBucketPath(p) {
+    this.file_bucket_path = p;
+  }
+
   getThumbBucketPath() {
     return this.thumb_bucket_path;
+  }
+
+  // used when updating the file
+  setThumbBucketPath(p) {
+    this.thumb_bucket_path = p;
   }
 
   setDate(d) {

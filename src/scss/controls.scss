@@ -290,6 +290,7 @@ $control-focus-border-width: 3px;
 }
 
 .form-button-superwhite:disabled, .form-button-superwhite:hover:disabled, .form-button-superwhite:focus:disabled {
+    color: #aaa;
     background-color: rgba(255, 255, 255, 0.1);
     border: 2px solid defs.$color-white-btn-border-disabled;
 }
