@@ -73,7 +73,6 @@ import { AccountPage } from './pages/Account';
 import { SubscriptionPage } from './pages/Subscription';
 import { DocPage } from './pages/doc/Doc';
 import { ApplyForInvitePage } from './pages/ApplyForInvite';
-import { EditPage } from './pages/Edit';
 
 function ScrollToTop() {
   const history = useHistory();
@@ -573,7 +572,7 @@ class App extends React.Component {
                   />
                 )}
               />
-              <Route
+              {/* <Route
                 path="/edit/:item_ident"
                 render={props => (
                   <EditPage
@@ -584,7 +583,7 @@ class App extends React.Component {
                     user={user}
                   />
                 )}
-              />
+              /> */}
               <Route
                 exact
                 path="/album/:album_ident"
@@ -600,19 +599,9 @@ class App extends React.Component {
               />
               <Route
                 exact
-                path={['/zoom/:album_ident']}
-                render={props => (
-                  <ViewAlbumPage
-                    {...props}
-                    app={this}
-                    albums={albums}
-                    user={user}
-                  />
-                )}
-              />
-              <Route
-                exact
                 path={[
+                  '/zoom/:album_ident',
+                  '/edit/:item_ident',
                   '/view',
                   '/view/:album_ident/',
                   '/view/:album_ident/:yyyymmdd',

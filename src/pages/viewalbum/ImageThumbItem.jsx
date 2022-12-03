@@ -130,7 +130,7 @@ export class ImageThumbItem extends React.Component {
     }
 
     renderItemMenu(is_image) {
-      const { item, page, history } = this.props;
+      const { item, page } = this.props;
 
       const dim = '1.6rem';
 
@@ -156,7 +156,7 @@ export class ImageThumbItem extends React.Component {
               data-testid="thumb-menu-crop"
               icon={<icon.Crop width={dim} height={dim} />}
               title="Crop Item"
-              onClick={() => history.push(`/edit/${item.getFileIdentifier()}`)}
+              onClick={() => page.gotoEditItem(item)}
             />
           </If>
           <If condition={is_image}>
@@ -228,6 +228,7 @@ export class ImageThumbItem extends React.Component {
             onSave={async (text) => {
               await page.handleSaveImageComment(item, text);
               this.setState({ mode: this.MODE_DEFAULT });
+              page.setState({ edit_comment_item: null });
             }}
             onCancel={() => {
               this.setState({ mode: this.MODE_DEFAULT });

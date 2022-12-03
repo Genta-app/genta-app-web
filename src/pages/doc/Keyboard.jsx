@@ -45,6 +45,10 @@ export const KeyboardPage = () => (
         <div>View current item (enlarge)</div>
       </div>
       <div className="doc-keyboard-grid">
+        <div>e</div>
+        <div>Edit (crop) current item</div>
+      </div>
+      <div className="doc-keyboard-grid">
         <div>Esc</div>
         <div>Cancel current selection</div>
       </div>
@@ -55,6 +59,10 @@ export const KeyboardPage = () => (
     <div className="doc-keyboard-grid">
       <div>Left/Right Arrow</div>
       <div>Go to prev/next item</div>
+    </div>
+    <div className="doc-keyboard-grid">
+      <div>e</div>
+      <div>Edit (crop) current item</div>
     </div>
     <div className="doc-keyboard-grid">
       <div>Esc</div>
