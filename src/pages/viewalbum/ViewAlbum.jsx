@@ -1930,7 +1930,7 @@ export class ViewAlbumPage extends Page {
   renderSelectionMenu() {
     const { selected_items, dialog } = this.state;
 
-    if (dialog === this.PAGE_DIALOG_NONE) {
+    if (dialog === this.PAGE_DIALOG_NONE && selected_items.length > 1) {
       return (
         <>
           <div className="view-album-selection-menu">
@@ -2274,7 +2274,9 @@ export class ViewAlbumPage extends Page {
                   {/* album.getAlbumName() */}
                 </div>
                 {this.renderAllThumbs()}
-                {selected_items.length > 0 && this.renderSelectionMenu()}
+                <If condition={selected_items.length > 0}>
+                  {this.renderSelectionMenu()}
+                </If>
               </div>
             </div>
           )}
