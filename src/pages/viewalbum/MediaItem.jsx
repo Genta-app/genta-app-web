@@ -24,7 +24,6 @@
 /* eslint-disable lines-between-class-members */
 
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import {
   loadAndDecryptFile,
@@ -205,8 +204,6 @@ const StatusAlert = ({ status, resetStatus }) => (
 
 export const EditMediaItem = (props) => {
   const { page } = props;
-
-  const history = useHistory();
 
   const [loaded, setLoaded] = useState(false);
   const [data_loaded, setDataLoaded] = useState(false);

@@ -93,24 +93,22 @@ export const ConfirmDeleteDialog = ({ onDelete, onClose, global }) => {
   );
 };
 
-export const ConfirmDeleteSelectionDialog = ({ selected_items, onDelete, onClose }) => {
-  return (
-    <div className="view-album-selection-dialog">
-      <div>
-        <div className="view-album-selection-dialog-title">
-          DELETE {selected_items.length} SELECTED ITEMS?
-        </div>
-        <div className="view-album-selection-dialog-text">
-          THIS CANNOT BE UNDONE
-        </div>
-        <div className="view-album-selection-dialog-buttons">
-          <c.DangerButtonSm autoFocus title="DELETE" onClick={onDelete} />
-          <c.WhiteButtonSm title="CANCEL" onClick={onClose} />
-        </div>
+export const ConfirmDeleteSelectionDialog = ({ selected_items, onDelete, onClose }) => (
+  <div className="view-album-selection-dialog">
+    <div>
+      <div className="view-album-selection-dialog-title">
+        DELETE {selected_items.length} SELECTED ITEMS?
+      </div>
+      <div className="view-album-selection-dialog-text">
+        THIS CANNOT BE UNDONE
+      </div>
+      <div className="view-album-selection-dialog-buttons">
+        <c.DangerButtonSm autoFocus title="DELETE" onClick={onDelete} />
+        <c.WhiteButtonSm title="CANCEL" onClick={onClose} />
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export const MovingDialog = ({ key, global, onCancel }) => {
   const className = ('view-album-photo-thumb-dialog'
